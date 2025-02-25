@@ -268,6 +268,7 @@ public class RentalService {
                 .map(this::convertToDTOSeven)
                 .collect(Collectors.toList());
     }
+
     public List<RentalFindByAverageRatingResponse> getRentalsByAverageRating(Double averageRating) {
         List<Rental> rentals = rentalRepository.findByRatingAverageRating(averageRating);
 
@@ -388,7 +389,6 @@ public class RentalService {
         return response;
     }
 
-
     private RentalFindByAvailabilityPeriodResponse convertToDTOThree(Rental rental) {
         RentalFindByAvailabilityPeriodResponse response = new RentalFindByAvailabilityPeriodResponse();
         response.setTitle(rental.getTitle());
@@ -396,14 +396,12 @@ public class RentalService {
         return response;
     }
 
-
     // https://chatgpt.com/share/67b4a4fb-a588-800b-9894-16722dd3a37d
     private boolean isPeriodMatching(Period period, LocalDate startDate, LocalDate endDate) {
         boolean overlap = (startDate.isEqual(period.getStartDate()) || startDate.isAfter(period.getStartDate())) &&
                 (endDate.isEqual(period.getEndDate()) || endDate.isBefore(period.getEndDate()));
         return overlap;
     }
-
 
     private RentalFindByCategoryResponse convertToDTOFour(Rental rental) {
         RentalFindByCategoryResponse response = new RentalFindByCategoryResponse();
@@ -448,11 +446,6 @@ public class RentalService {
         return match;
     }
 
-
-
-
-
-
     private GetRentalsResponse convertToGetRentalsResponse(Rental rental) {
         return new GetRentalsResponse(
                 rental.getTitle(),
@@ -463,6 +456,7 @@ public class RentalService {
                 rental.getAddress().getCity(),
                 rental.getRating().getAverageRating());
     }
+
     private RentalFindByAverageRatingResponse convertToRentalFindByAverageRatingResponse(Rental rental) {
         RentalFindByAverageRatingResponse response = new RentalFindByAverageRatingResponse();
         response.setTitle(rental.getTitle());
