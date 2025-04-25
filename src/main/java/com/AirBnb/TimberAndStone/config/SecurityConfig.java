@@ -54,7 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("/rentalreviews/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/auth/**").permitAll()
                         // any other requests the user need to be logged
-                        .anyRequest().authenticated()
+                       .anyRequest().authenticated()
                 )
                 // disable session due to jwt statelessness
                 .sessionManagement(session -> session
@@ -75,7 +75,12 @@ public class SecurityConfig {
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
 
+
         configuration.setAllowCredentials(true);
+
+        //IFALL OLIWER INTE FÅR ATT FUNKA - //
+        //Denna to vi bort efter Helenas cors update. kanske behövs ????
+        //configuration.setExposedHeaders(Arrays.asList("Set-Cookie"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

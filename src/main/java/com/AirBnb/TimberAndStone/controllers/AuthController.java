@@ -1,9 +1,10 @@
 package com.AirBnb.TimberAndStone.controllers;
 
 import com.AirBnb.TimberAndStone.dtos.requests.authentication.AuthRequest;
-import com.AirBnb.TimberAndStone.dtos.responses.authentication.AuthResponse;
 import com.AirBnb.TimberAndStone.dtos.requests.authentication.RegisterRequest;
+import com.AirBnb.TimberAndStone.dtos.responses.authentication.AuthResponse;
 import com.AirBnb.TimberAndStone.dtos.responses.authentication.RegisterResponse;
+import com.AirBnb.TimberAndStone.models.User;
 import com.AirBnb.TimberAndStone.services.UserService;
 import com.AirBnb.TimberAndStone.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,10 +21,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -108,6 +107,30 @@ public class AuthController {
                 // hade kunnat ta bort denna raden och använda rad 134
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body("Logout successful!");
+    }
+
+
+
+// SLÄNGER IN DENNA FÖR ATT vår frontend vill ha en sådan (KAN TAS BORT)
+
+    @GetMapping("/check")
+    public ResponseEntity<?> checkAuthentication() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // kontrollera om användaren är authenticated
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not authenticated!");
+        }
+
+        // returnera user info om authentication
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User user = userService.findByUsername(userDetails.getUsername());
+
+        return ResponseEntity.ok(new AuthResponse(
+                "Authenticated",
+                user.getUsername(),
+                user.getRoles()
+        ));
     }
 
 
