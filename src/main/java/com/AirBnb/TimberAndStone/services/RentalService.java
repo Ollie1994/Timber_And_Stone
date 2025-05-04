@@ -1,5 +1,6 @@
 package com.AirBnb.TimberAndStone.services;
 
+import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalPageResponse;
 import com.AirBnb.TimberAndStone.exceptions.ConflictException;
 import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
 import com.AirBnb.TimberAndStone.exceptions.UnauthorizedException;
@@ -332,6 +333,13 @@ public class RentalService {
                 .collect(Collectors.toList());
     }
 
+    // -------------------------- Rental page --------------------------------------------------------------------------
+    public RentalPageResponse getRentalPageById(String id) {
+        Rental rental = rentalRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Rental not found (P)"));
+        return convertToRentalPageResponse(rental);
+    }
+
 
 
     // -------------------------- Help Methods -------------------------------------------------------------------------
@@ -469,6 +477,32 @@ public class RentalService {
                 rental.getAddress().getCity(),
                 rental.getRating().getAverageRating());
     }
+
+    // --------------------- Rental Page Helpers ---------------------------------------------------
+
+
+    private RentalPageResponse convertToRentalPageResponse(Rental rental) {
+        return new RentalPageResponse(
+                rental.getId(),
+                rental.getTitle(),
+                rental.getPhotos(),
+                rental.getPricePerNight(),
+                rental.getRating(),
+                rental.getHost(),
+                rental.getAddress(),
+                rental.getCategory(),
+                rental.getAmenities(),
+                rental.getCapacity(),
+                rental.getAvailablePeriods(),
+                rental.getDescription(),
+                rental.getPolicy(),
+                rental.getCreatedAt(),
+                rental.getUpdatedAt()
+        );
+    }
+
+
+
 
 }
 
