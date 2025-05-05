@@ -1,6 +1,7 @@
 package com.AirBnb.TimberAndStone.services;
 
 import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalPageResponse;
+import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalPagesResponse;
 import com.AirBnb.TimberAndStone.exceptions.ConflictException;
 import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
 import com.AirBnb.TimberAndStone.exceptions.UnauthorizedException;
@@ -340,7 +341,14 @@ public class RentalService {
         return convertToRentalPageResponse(rental);
     }
 
+    // -------------------------- Rental pages --------------------------------------------------------------------------
+    public List<RentalPagesResponse> getAllRentalPages() {
+        List<Rental> rentals = rentalRepository.findAll();
 
+        return rentals.stream()
+                .map(this::convertToRentalPagesResponse)
+                .collect(Collectors.toList());
+    }
 
     // -------------------------- Help Methods -------------------------------------------------------------------------
 
@@ -499,6 +507,20 @@ public class RentalService {
                 rental.getCreatedAt(),
                 rental.getUpdatedAt()
         );
+    }
+    // --------------------- Rental Pages Helpers ---------------------------------------------------
+
+    private RentalPagesResponse convertToRentalPagesResponse(Rental rental) {
+        return new RentalPagesResponse(
+                rental.getId(),
+                rental.getTitle(),
+                rental.getPhotos(),
+                rental.getCategory(),
+                rental.getDescription(),
+                rental.getAddress().getCountry(),
+                rental.getAddress().getCity(),
+                rental.getRating().getAverageRating());
+
     }
 
 

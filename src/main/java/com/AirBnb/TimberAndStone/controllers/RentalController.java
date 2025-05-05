@@ -2,6 +2,7 @@ package com.AirBnb.TimberAndStone.controllers;
 
 import com.AirBnb.TimberAndStone.dtos.responses.rental.GetRentalsResponse;
 import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalPageResponse;
+import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalPagesResponse;
 import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalResponse;
 import com.AirBnb.TimberAndStone.models.Category;
 import com.AirBnb.TimberAndStone.dtos.requests.rental.RentalAmenitiesRequest;
@@ -126,6 +127,16 @@ public class RentalController {
         RentalPageResponse rental = rentalService.getRentalPageById(id);
         return new ResponseEntity<>(rental, HttpStatus.OK);
     }
+
+
+// Rental pages ---------------------------------------
+
+    @GetMapping("/page")
+    public ResponseEntity<List<RentalPagesResponse>> getAllRentalPages() {
+        List<RentalPagesResponse> rentals = rentalService.getAllRentalPages();
+        return new ResponseEntity<>(rentals, HttpStatus.OK);
+    }
+
 
 
 }
