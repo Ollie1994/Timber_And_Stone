@@ -57,7 +57,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
 
                         // added as per chatgpt because of problems displaying the home page rentals
-                        .requestMatchers("/rental/page").permitAll()
+                        .requestMatchers("/rental/page/**").permitAll()
                         // any other requests the user need to be logged
                        .anyRequest().authenticated()
                 )
