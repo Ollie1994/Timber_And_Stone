@@ -344,12 +344,23 @@ public class RentalService {
     // -------------------------- Rental pages --------------------------------------------------------------------------
     public List<RentalPagesResponse> getAllRentalPages() {
         List<Rental> rentals = rentalRepository.findAll();
+        return rentals.stream()
+                .map(this::convertToRentalPagesResponse)
+                .collect(Collectors.toList());
+    }
+    public List<RentalPagesResponse> getRentalPagesByPricePerNightRange(Double minPrice, Double maxPrice) {
+        if(minPrice <= 0 || maxPrice <= 0) {
+            throw new IllegalArgumentException("Price must be greater than 0");
+        }
+        if(minPrice > maxPrice) {
+            throw new IllegalArgumentException("minPrice must be less than or equal to maxPrice");
+        }
+        List<Rental> rentals = rentalRepository.findByPricePerNightBetweenInclusive(minPrice, maxPrice);
 
         return rentals.stream()
                 .map(this::convertToRentalPagesResponse)
                 .collect(Collectors.toList());
     }
-
     // -------------------------- Help Methods -------------------------------------------------------------------------
 
     private List<Rental> getRentalsByCountry(String country) {

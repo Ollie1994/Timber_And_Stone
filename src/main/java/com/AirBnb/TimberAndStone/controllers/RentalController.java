@@ -137,7 +137,11 @@ public class RentalController {
         return new ResponseEntity<>(rentals, HttpStatus.OK);
     }
 
-
+    @GetMapping("/page/pricepernight")
+    public ResponseEntity<List<RentalPagesResponse>> getRentalPagesByPricePerNightRange(@RequestParam Double minPrice, @RequestParam Double maxPrice) {
+        List<RentalPagesResponse> rentals = rentalService.getRentalPagesByPricePerNightRange(minPrice, maxPrice);
+        return new ResponseEntity<>(rentals, HttpStatus.OK);
+    }
 
 }
 
