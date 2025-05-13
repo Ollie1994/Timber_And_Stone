@@ -70,9 +70,10 @@ public class RentalService {
             throw new IllegalArgumentException("Title can not be null or empty");
         }
         // Validate photos is not more than 10
+        // Changed to max 5 photos to match our Figma design
         List<String> photos = rentalRequest.getPhotos();
-        if (photos != null && photos.size() > 10) {
-            throw new IllegalArgumentException("Can not have more than 10 photos");
+        if (photos != null && photos.size() > 5) {
+            throw new IllegalArgumentException("Can not have more than 5 photos");
         }
 
         // Validate pricePerNight is between 1-1000000

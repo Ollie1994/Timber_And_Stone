@@ -22,7 +22,8 @@ public class Rental {
     private String title;
 
     //@NotNull(message = "Photos can not be null")
-    @Size(max = 10, message = "You can add max 10 photos")
+    // Changed to max 5 images to match our Figma design
+    @Size(max = 5, message = "You can add max 5 photos")
     private List<String> photos;
 
     @NotNull(message = "Price per night can not be null")
@@ -92,11 +93,11 @@ public class Rental {
         this.title = title;
     }
 
-    public @NotNull(message = "Photos can not be null") @Size(max = 10, message = "You can add max 10 photos") List<String> getPhotos() {
+    public @NotNull(message = "Photos can not be null") @Size(max = 5, message = "You can add max 5 photos") List<String> getPhotos() {
         return photos;
     }
 
-    public void setPhotos(@NotNull(message = "Photos can not be null") @Size(max = 10, message = "You can add max 10 photos") List<String> photos) {
+    public void setPhotos(@NotNull(message = "Photos can not be null") @Size(max = 5, message = "You can add max 5 photos") List<String> photos) {
         this.photos = photos;
     }
 
