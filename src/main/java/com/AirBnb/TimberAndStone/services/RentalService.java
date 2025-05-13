@@ -168,6 +168,9 @@ public class RentalService {
             existingRental.setTitle(request.getTitle());
         }
         if (request.getPhotos() != null) {
+            if (request.getPhotos().size() > 5) {
+                throw new IllegalArgumentException("Can not have more than 5 photos");
+            }
             existingRental.setPhotos(request.getPhotos());
         }
         if (request.getPricePerNight() != null) {
