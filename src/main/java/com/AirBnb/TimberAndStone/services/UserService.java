@@ -5,10 +5,7 @@ import com.AirBnb.TimberAndStone.dtos.requests.authentication.RegisterRequest;
 import com.AirBnb.TimberAndStone.dtos.requests.user.PatchUserRequest;
 import com.AirBnb.TimberAndStone.dtos.responses.authentication.RegisterResponse;
 import com.AirBnb.TimberAndStone.dtos.responses.rental.ContactResponse;
-import com.AirBnb.TimberAndStone.dtos.responses.user.ActivateDeactivateResponse;
-import com.AirBnb.TimberAndStone.dtos.responses.user.GetSingleUserResponse;
-import com.AirBnb.TimberAndStone.dtos.responses.user.PatchUserResponse;
-import com.AirBnb.TimberAndStone.dtos.responses.user.UserResponse;
+import com.AirBnb.TimberAndStone.dtos.responses.user.*;
 import com.AirBnb.TimberAndStone.exceptions.ConflictException;
 import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
 import com.AirBnb.TimberAndStone.exceptions.UnauthorizedException;
@@ -236,8 +233,27 @@ public class UserService {
                 user.getFavouriteRentals()
         );
     }
+// -------------------------------- User Profile ---------------------------------------------
+public UserProfileResponse getUserProfileById(String id) {
+    User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
+    return convertToUserProfileResponse(user);
+}
+    // ---------------------------- User Profile HELP METHODS ---------------------------------------------
+    private UserProfileResponse convertToUserProfileResponse(User user) {
+        return new UserProfileResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getUsername(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getPhoneNumber(),
+                user.getAddress(),
+                user.getRating(),
+                user.getProfilePhoto());
 
+    }
     // ---------------------------- HELP METHODS ---------------------------------------------
 
     private UserResponse convertToUserResponse(User user) {
