@@ -47,12 +47,17 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/rental/**").hasAnyRole("USER", "ADMIN")
+                        // Vi tog bort "/rental/**" för att ej inloggad användare ska kunna se rentals på home page
+                        // Lägg till /** om vi vill gå tillbaka till föregående
+                        .requestMatchers("/rental").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/booking/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/conversation/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/userreviews/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/rentalreviews/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/auth/**").permitAll()
+
+                        // added as per chatgpt because of problems displaying the home page rentals
+                        .requestMatchers("/rental/page/**").permitAll()
                         // any other requests the user need to be logged
                        .anyRequest().authenticated()
                 )

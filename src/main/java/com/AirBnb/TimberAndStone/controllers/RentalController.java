@@ -1,6 +1,8 @@
 package com.AirBnb.TimberAndStone.controllers;
 
 import com.AirBnb.TimberAndStone.dtos.responses.rental.GetRentalsResponse;
+import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalPageResponse;
+import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalPagesResponse;
 import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalResponse;
 import com.AirBnb.TimberAndStone.models.Category;
 import com.AirBnb.TimberAndStone.dtos.requests.rental.RentalAmenitiesRequest;
@@ -117,9 +119,29 @@ public class RentalController {
     }
 
 
+// Rental page ---------------------------------------
 
 
+    @GetMapping("/page/{id}")
+    public ResponseEntity<RentalPageResponse> getRentalPageById(@Valid @PathVariable String id) {
+        RentalPageResponse rental = rentalService.getRentalPageById(id);
+        return new ResponseEntity<>(rental, HttpStatus.OK);
+    }
 
+
+// Rental pages ---------------------------------------
+
+    @GetMapping("/page")
+    public ResponseEntity<List<RentalPagesResponse>> getAllRentalPages() {
+        List<RentalPagesResponse> rentals = rentalService.getAllRentalPages();
+        return new ResponseEntity<>(rentals, HttpStatus.OK);
+    }
+
+    @GetMapping("/page/pricepernight")
+    public ResponseEntity<List<RentalPagesResponse>> getRentalPagesByPricePerNightRange(@RequestParam Double minPrice, @RequestParam Double maxPrice) {
+        List<RentalPagesResponse> rentals = rentalService.getRentalPagesByPricePerNightRange(minPrice, maxPrice);
+        return new ResponseEntity<>(rentals, HttpStatus.OK);
+    }
 
 }
 

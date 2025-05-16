@@ -73,7 +73,9 @@ public class AuthController {
             AuthResponse authResponse = new AuthResponse(
                     "Login successful",
                     userDetails.getUsername(),
-                    userService.findByUsername(userDetails.getUsername()).getRoles()
+                    userService.findByUsername(userDetails.getUsername()).getRoles(),
+                    // la till 2025-05-15
+                    userService.findByUsername(userDetails.getUsername()).getId()
             );
             // return response with cookie-header and body
             return ResponseEntity.ok()
@@ -129,7 +131,9 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(
                 "Authenticated",
                 user.getUsername(),
-                user.getRoles()
+                user.getRoles(),
+                // la till 2025-05-15
+                user.getId()
         ));
     }
 

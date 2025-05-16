@@ -1,5 +1,7 @@
 package com.AirBnb.TimberAndStone.services;
 
+import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalPageResponse;
+import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalPagesResponse;
 import com.AirBnb.TimberAndStone.exceptions.ConflictException;
 import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
 import com.AirBnb.TimberAndStone.exceptions.UnauthorizedException;
@@ -68,9 +70,10 @@ public class RentalService {
             throw new IllegalArgumentException("Title can not be null or empty");
         }
         // Validate photos is not more than 10
+        // Changed to max 5 photos to match our Figma design
         List<String> photos = rentalRequest.getPhotos();
-        if (photos != null && photos.size() > 10) {
-            throw new IllegalArgumentException("Can not have more than 10 photos");
+        if (photos != null && photos.size() > 5) {
+            throw new IllegalArgumentException("Can not have more than 5 photos");
         }
 
         // Validate pricePerNight is between 1-1000000
@@ -165,6 +168,9 @@ public class RentalService {
             existingRental.setTitle(request.getTitle());
         }
         if (request.getPhotos() != null) {
+            if (request.getPhotos().size() > 5) {
+                throw new IllegalArgumentException("Can not have more than 5 photos");
+            }
             existingRental.setPhotos(request.getPhotos());
         }
         if (request.getPricePerNight() != null) {
@@ -332,8 +338,33 @@ public class RentalService {
                 .collect(Collectors.toList());
     }
 
+    // -------------------------- Rental page --------------------------------------------------------------------------
+    public RentalPageResponse getRentalPageById(String id) {
+        Rental rental = rentalRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Rental not found (P)"));
+        return convertToRentalPageResponse(rental);
+    }
 
+    // -------------------------- Rental pages --------------------------------------------------------------------------
+    public List<RentalPagesResponse> getAllRentalPages() {
+        List<Rental> rentals = rentalRepository.findAll();
+        return rentals.stream()
+                .map(this::convertToRentalPagesResponse)
+                .collect(Collectors.toList());
+    }
+    public List<RentalPagesResponse> getRentalPagesByPricePerNightRange(Double minPrice, Double maxPrice) {
+        if(minPrice <= 0 || maxPrice <= 0) {
+            throw new IllegalArgumentException("Price must be greater than 0");
+        }
+        if(minPrice > maxPrice) {
+            throw new IllegalArgumentException("minPrice must be less than or equal to maxPrice");
+        }
+        List<Rental> rentals = rentalRepository.findByPricePerNightBetweenInclusive(minPrice, maxPrice);
 
+        return rentals.stream()
+                .map(this::convertToRentalPagesResponse)
+                .collect(Collectors.toList());
+    }
     // -------------------------- Help Methods -------------------------------------------------------------------------
 
     private List<Rental> getRentalsByCountry(String country) {
@@ -469,6 +500,46 @@ public class RentalService {
                 rental.getAddress().getCity(),
                 rental.getRating().getAverageRating());
     }
+
+    // --------------------- Rental Page Helpers ---------------------------------------------------
+
+
+    private RentalPageResponse convertToRentalPageResponse(Rental rental) {
+        return new RentalPageResponse(
+                rental.getId(),
+                rental.getTitle(),
+                rental.getPhotos(),
+                rental.getPricePerNight(),
+                rental.getRating(),
+                rental.getHost(),
+                rental.getAddress(),
+                rental.getCategory(),
+                rental.getAmenities(),
+                rental.getCapacity(),
+                rental.getAvailablePeriods(),
+                rental.getDescription(),
+                rental.getPolicy(),
+                rental.getCreatedAt(),
+                rental.getUpdatedAt()
+        );
+    }
+    // --------------------- Rental Pages Helpers ---------------------------------------------------
+
+    private RentalPagesResponse convertToRentalPagesResponse(Rental rental) {
+        return new RentalPagesResponse(
+                rental.getId(),
+                rental.getTitle(),
+                rental.getPhotos(),
+                rental.getCategory(),
+                rental.getDescription(),
+                rental.getAddress().getCountry(),
+                rental.getAddress().getCity(),
+                rental.getRating().getAverageRating());
+
+    }
+
+
+
 
 }
 
