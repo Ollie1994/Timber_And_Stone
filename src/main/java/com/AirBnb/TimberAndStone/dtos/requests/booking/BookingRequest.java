@@ -23,7 +23,8 @@ public class BookingRequest {
     @NotNull(message = "endDate cant be null.")
     private LocalDate endDate;
 
-    @NotNull(message = "Note can not be null")
+    // Commented out to see if booking request can be sent from frontend
+    //@NotNull(message = "Note can not be null")
     @Size(max = 300, message = "Note can not exceed 300 characters.")
     //Can be empty, in case the customer has no notes fo the host.
     private String note;
@@ -43,7 +44,9 @@ public class BookingRequest {
         return endDate;
     }
 
-    public @NotNull(message = "Note can not be null") @Size(max = 300, message = "Note can not exceed 300 characters.") String getNote() {
+    public
+    //@NotNull(message = "Note can not be null")
+    @Size(max = 300, message = "Note can not exceed 300 characters.") String getNote() {
         return note;
     }
 
