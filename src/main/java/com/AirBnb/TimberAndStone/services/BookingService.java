@@ -1,5 +1,6 @@
 package com.AirBnb.TimberAndStone.services;
 
+import com.AirBnb.TimberAndStone.dtos.responses.booking.*;
 import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
 import com.AirBnb.TimberAndStone.exceptions.UnauthorizedException;
 import com.AirBnb.TimberAndStone.models.*;
@@ -8,10 +9,6 @@ import com.AirBnb.TimberAndStone.repositories.RentalRepository;
 import com.AirBnb.TimberAndStone.repositories.UserRepository;
 import com.AirBnb.TimberAndStone.dtos.requests.booking.BookingRequest;
 import com.AirBnb.TimberAndStone.dtos.requests.booking.PatchBookingRequest;
-import com.AirBnb.TimberAndStone.dtos.responses.booking.AllBookingsResponse;
-import com.AirBnb.TimberAndStone.dtos.responses.booking.BookingResponse;
-import com.AirBnb.TimberAndStone.dtos.responses.booking.PatchBookingResponse;
-import com.AirBnb.TimberAndStone.dtos.responses.booking.PostBookingResponse;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -254,7 +251,17 @@ public class BookingService {
 
         bookingRepository.delete(booking);
     }
+    // ------------------------------------ Booking Profile ---------------------------------------------------
+    public List<BookingProfileResponse> getBookingsForProfileByUserId(String id){
+        userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
+        List<Booking> bookings = bookingRepository.findByUserId(id);
+
+        return bookings.stream()
+                .map(this::convertToBookingProfileResponse)
+                .collect(Collectors.toList());
+    }
     //------------------------------------------HELP METHODS----------------------------------------------------
 
     private void validateNumberOfGuests(Rental rental, int numberOfGuests) {
@@ -353,5 +360,27 @@ public class BookingService {
                 }
         System.out.println("1: No matches found, ID is unique in combination with user and rental");
         return randomPositiveInt.toString();
+    }
+
+
+    // ------------------------------------ Booking Profile  HELPERS ---------------------------------------------------
+    private BookingProfileResponse convertToBookingProfileResponse(Booking booking) {
+        return new BookingProfileResponse(
+               booking.getId(),
+                booking.getBookingNumber(),
+                booking.getUser(),
+                booking.getNumberOfGuests(),
+                booking.getRental(),
+                booking.getPeriod(),
+                booking.getTotalPrice(),
+                booking.getPaid(),
+                booking.getBookingStatus(),
+                booking.getNote(),
+                booking.getReviewedByUser(),
+                booking.getReviewedByHost(),
+                booking.getCreatedAt(),
+                booking.getUpdatedAt()
+
+        );
     }
 }

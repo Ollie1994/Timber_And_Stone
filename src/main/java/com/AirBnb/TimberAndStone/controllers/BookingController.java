@@ -2,10 +2,7 @@ package com.AirBnb.TimberAndStone.controllers;
 
 import com.AirBnb.TimberAndStone.dtos.requests.booking.BookingRequest;
 import com.AirBnb.TimberAndStone.dtos.requests.booking.PatchBookingRequest;
-import com.AirBnb.TimberAndStone.dtos.responses.booking.AllBookingsResponse;
-import com.AirBnb.TimberAndStone.dtos.responses.booking.BookingResponse;
-import com.AirBnb.TimberAndStone.dtos.responses.booking.PatchBookingResponse;
-import com.AirBnb.TimberAndStone.dtos.responses.booking.PostBookingResponse;
+import com.AirBnb.TimberAndStone.dtos.responses.booking.*;
 import com.AirBnb.TimberAndStone.services.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -85,4 +82,13 @@ public class BookingController {
         bookingService.deleteBooking(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+
+    // ---------------------- Booking profile --------------------------------------------
+    @GetMapping("/user/profile/{id}")
+    public ResponseEntity<List<BookingProfileResponse>> getBookingsForProfileByUserId(@PathVariable String id) {
+        List<BookingProfileResponse> bookings = bookingService.getBookingsForProfileByUserId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(bookings);
+    }
+
 }
