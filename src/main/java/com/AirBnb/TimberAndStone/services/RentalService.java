@@ -59,11 +59,8 @@ public class RentalService {
 
 
         Rental rental = new Rental();
-        //Rating rating = new Rating();
 
         // Fields we set ourself
-        /*rating.setAverageRating(0.0);
-        rating.setNumberOfRatings(0);*/
         rental.setRating(rentalHelper.getDefaultRating());
         rental.setHost(user);
 
