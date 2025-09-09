@@ -3,6 +3,7 @@ package com.AirBnb.TimberAndStone.services;
 import com.AirBnb.TimberAndStone.dtos.responses.booking.*;
 import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
 import com.AirBnb.TimberAndStone.exceptions.UnauthorizedException;
+import com.AirBnb.TimberAndStone.generators.BookingNumberGenerator;
 import com.AirBnb.TimberAndStone.models.*;
 import com.AirBnb.TimberAndStone.repositories.BookingRepository;
 import com.AirBnb.TimberAndStone.repositories.RentalRepository;
@@ -27,8 +28,9 @@ public class BookingService {
     private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
     private final BookingValidation bookingValidation;
+    private final BookingNumberGenerator bookingNumberGenerator;
 
-    public BookingService(BookingRepository bookingRepository, PeriodService periodService, UserService userService, RentalService rentalService, UserRepository userRepository, RentalRepository rentalRepository, BookingValidation bookingValidation) {
+    public BookingService(BookingRepository bookingRepository, PeriodService periodService, UserService userService, RentalService rentalService, UserRepository userRepository, RentalRepository rentalRepository, BookingValidation bookingValidation, BookingNumberGenerator bookingNumberGenerator) {
         this.bookingRepository = bookingRepository;
         this.periodService = periodService;
         this.userService = userService;
@@ -36,6 +38,7 @@ public class BookingService {
         this.userRepository = userRepository;
         this.rentalRepository = rentalRepository;
         this.bookingValidation = bookingValidation;
+        this.bookingNumberGenerator = bookingNumberGenerator;
     }
 
     public PostBookingResponse createBooking(BookingRequest bookingRequest) {
@@ -66,7 +69,7 @@ public class BookingService {
         booking.setBookingStatus(BookingStatus.PENDING);
         booking.setCreatedAt(LocalDateTime.now());
         booking.setUpdatedAt(LocalDateTime.now());
-        booking.setBookingNumber(generateBookingNumber(userService.getAuthenticated(), rental));
+        booking.setBookingNumber(bookingNumberGenerator.generateBookingNumber(userService.getAuthenticated().getId(), rental.getId()));
         booking.setReviewedByUser(false);
         booking.setReviewedByHost(false);
 
