@@ -105,7 +105,7 @@ public class BookingService {
         List<Booking> bookings = bookingRepository.findByUserId(id);
 
         return bookings.stream()
-                .map(this::convertToBookingResponse)
+                .map(bookingConverter::convertToBookingResponse)
                 .collect(Collectors.toList());
     }
 
@@ -118,7 +118,7 @@ public class BookingService {
         }
 
         return bookings.stream()
-                .map(this::convertToBookingResponse)
+                .map(bookingConverter::convertToBookingResponse)
                 .collect(Collectors.toList());
     }
 
@@ -129,7 +129,7 @@ public class BookingService {
         List<Booking> bookings = bookingRepository.findByRentalId(id);
 
         return bookings.stream()
-                .map(this::convertToBookingResponse)
+                .map(bookingConverter::convertToBookingResponse)
                 .collect(Collectors.toList());
     }
 
