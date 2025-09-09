@@ -262,7 +262,7 @@ public class BookingService {
     }
     //------------------------------------------HELP METHODS----------------------------------------------------
 
-    private BookingResponse convertToBookingResponse(Booking booking) {
+    /*private BookingResponse convertToBookingResponse(Booking booking) {
         return new BookingResponse(
                 booking.getBookingNumber(),
                 booking.getRental().getTitle(),
@@ -274,7 +274,7 @@ public class BookingService {
                 booking.getNote(),
                 booking.getCreatedAt()
         );
-    }
+    }*/
 
     private AllBookingsResponse convertToAllBookingsResponse(Booking booking) {
         return new AllBookingsResponse(
