@@ -1,5 +1,6 @@
 package com.AirBnb.TimberAndStone.services;
 
+import com.AirBnb.TimberAndStone.converters.BookingConverter;
 import com.AirBnb.TimberAndStone.dtos.responses.booking.*;
 import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
 import com.AirBnb.TimberAndStone.exceptions.UnauthorizedException;
@@ -27,8 +28,9 @@ public class BookingService {
     private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
     private final BookingValidation bookingValidation;
+    private final BookingConverter bookingConverter;
 
-    public BookingService(BookingRepository bookingRepository, PeriodService periodService, UserService userService, RentalService rentalService, UserRepository userRepository, RentalRepository rentalRepository, BookingValidation bookingValidation) {
+    public BookingService(BookingRepository bookingRepository, PeriodService periodService, UserService userService, RentalService rentalService, UserRepository userRepository, RentalRepository rentalRepository, BookingValidation bookingValidation, BookingConverter bookingConverter) {
         this.bookingRepository = bookingRepository;
         this.periodService = periodService;
         this.userService = userService;
@@ -36,6 +38,7 @@ public class BookingService {
         this.userRepository = userRepository;
         this.rentalRepository = rentalRepository;
         this.bookingValidation = bookingValidation;
+        this.bookingConverter = bookingConverter;
     }
 
     public PostBookingResponse createBooking(BookingRequest bookingRequest) {
@@ -92,7 +95,7 @@ public class BookingService {
     public BookingResponse getBookingById(String id) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
-        return convertToBookingResponse(booking);
+        return bookingConverter.convertToBookingResponse(booking);
     }
 
     public List<BookingResponse> getBookingsByUserId(String id){
