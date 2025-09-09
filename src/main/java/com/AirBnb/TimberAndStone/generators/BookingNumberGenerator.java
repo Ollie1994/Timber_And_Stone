@@ -42,7 +42,7 @@ public class BookingNumberGenerator {
         return number.toString();
     }
 
-    private Integer generateRandomNumber() {
+    private Integer c() {
         SecureRandom secureRandom = new SecureRandom();
         //Generate random number
         Integer randomPositiveInt = Math.abs(secureRandom.nextInt());
