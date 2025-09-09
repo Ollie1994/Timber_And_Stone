@@ -9,6 +9,7 @@ import com.AirBnb.TimberAndStone.repositories.RentalRepository;
 import com.AirBnb.TimberAndStone.repositories.UserRepository;
 import com.AirBnb.TimberAndStone.dtos.requests.booking.BookingRequest;
 import com.AirBnb.TimberAndStone.dtos.requests.booking.PatchBookingRequest;
+import com.AirBnb.TimberAndStone.validation.BookingValidation;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -25,17 +26,22 @@ public class BookingService {
     private final RentalService rentalService;
     private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
+    private final BookingValidation bookingValidation;
 
-    public BookingService(BookingRepository bookingRepository, PeriodService periodService, UserService userService, RentalService rentalService, UserRepository userRepository, RentalRepository rentalRepository) {
+    public BookingService(BookingRepository bookingRepository, PeriodService periodService, UserService userService, RentalService rentalService, UserRepository userRepository, RentalRepository rentalRepository, BookingValidation bookingValidation) {
         this.bookingRepository = bookingRepository;
         this.periodService = periodService;
         this.userService = userService;
         this.rentalService = rentalService;
         this.userRepository = userRepository;
         this.rentalRepository = rentalRepository;
+        this.bookingValidation = bookingValidation;
     }
 
     public PostBookingResponse createBooking(BookingRequest bookingRequest) {
+
+        bookingValidation.validateBookingRequest(bookingRequest);
+
         Booking booking = new Booking();
 
         //Set user to authorized user.
@@ -45,13 +51,6 @@ public class BookingService {
         Rental rental = rentalRepository.findById(bookingRequest.getRental().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
         booking.setRental(rental);
-
-        /*
-        Gets all the available periods for the rental you want to book and checks the dates you want to book vs the ->
-        available dates in rental and send an error if none of the dates match
-         */
-        List<Period> periods = rental.getAvailablePeriods();
-        periodService.isPeriodMatching(periods, bookingRequest);
 
         //DTO values
         Period period = new Period();
@@ -71,7 +70,6 @@ public class BookingService {
         booking.setReviewedByUser(false);
         booking.setReviewedByHost(false);
 
-        validateBooking(booking);
 
         Booking createdBooking = bookingRepository.save(booking);
 
@@ -143,7 +141,7 @@ public class BookingService {
         }
 
         if(request.getNumberOfGuests() != null) {
-            validateNumberOfGuests(booking.getRental(), request.getNumberOfGuests());
+            bookingValidation.validateNumberOfGuests(request.getNumberOfGuests(), booking.getRental());
             booking.setNumberOfGuests(request.getNumberOfGuests());
         }
 
@@ -157,7 +155,7 @@ public class BookingService {
             booking.setTotalPrice(periodService.getAmountOfDays(period) * booking.getRental().getPricePerNight());
         }
 
-        validateBooking(booking);
+        bookingValidation.validateBooking(booking);
 
         bookingRepository.save(booking);
         return convertToPatchBookingResponse("The booking has been updated successfully", booking);
@@ -263,22 +261,6 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
     //------------------------------------------HELP METHODS----------------------------------------------------
-
-    private void validateNumberOfGuests(Rental rental, int numberOfGuests) {
-        if (numberOfGuests < 1) {
-            throw new IllegalArgumentException("Number of guests must be greater than 0");
-        } else if (numberOfGuests > rental.getCapacity()) {
-            throw new IllegalArgumentException("This rental allows max " + rental.getCapacity() + " guests!");
-        }
-    }
-
-    private void validateBooking(Booking booking) {
-        if(booking.getPeriod().getStartDate().isAfter(booking.getPeriod().getEndDate()) || booking.getPeriod().getStartDate().equals(booking.getPeriod().getEndDate())) {
-            throw new IllegalArgumentException("Booking period start date must be before end date!");
-        }
-
-        validateNumberOfGuests(booking.getRental(), booking.getNumberOfGuests());
-    }
 
     private BookingResponse convertToBookingResponse(Booking booking) {
         return new BookingResponse(
