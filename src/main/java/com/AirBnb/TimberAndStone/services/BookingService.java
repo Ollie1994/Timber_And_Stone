@@ -95,7 +95,7 @@ public class BookingService {
     public BookingResponse getBookingById(String id) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
-        return convertToBookingResponse(booking);
+        return bookingConverter.convertToBookingResponse(booking);
     }
 
     public List<BookingResponse> getBookingsByUserId(String id){
@@ -105,7 +105,7 @@ public class BookingService {
         List<Booking> bookings = bookingRepository.findByUserId(id);
 
         return bookings.stream()
-                .map(this::convertToBookingResponse)
+                .map(bookingConverter::convertToBookingResponse)
                 .collect(Collectors.toList());
     }
 
@@ -118,7 +118,7 @@ public class BookingService {
         }
 
         return bookings.stream()
-                .map(this::convertToBookingResponse)
+                .map(bookingConverter::convertToBookingResponse)
                 .collect(Collectors.toList());
     }
 
@@ -129,7 +129,7 @@ public class BookingService {
         List<Booking> bookings = bookingRepository.findByRentalId(id);
 
         return bookings.stream()
-                .map(this::convertToBookingResponse)
+                .map(bookingConverter::convertToBookingResponse)
                 .collect(Collectors.toList());
     }
 
@@ -265,19 +265,6 @@ public class BookingService {
     }
     //------------------------------------------HELP METHODS----------------------------------------------------
 
-    private BookingResponse convertToBookingResponse(Booking booking) {
-        return new BookingResponse(
-                booking.getBookingNumber(),
-                booking.getRental().getTitle(),
-                booking.getUser().getUsername(),
-                booking.getNumberOfGuests(),
-                booking.getPeriod(),
-                booking.getTotalPrice(),
-                booking.getBookingStatus(),
-                booking.getNote(),
-                booking.getCreatedAt()
-        );
-    }
 
     private PatchBookingResponse convertToPatchBookingResponse(String message, Booking booking) {
         return new PatchBookingResponse(
