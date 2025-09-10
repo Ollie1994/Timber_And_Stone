@@ -1,5 +1,6 @@
 package com.AirBnb.TimberAndStone.services;
 
+import com.AirBnb.TimberAndStone.converters.BookingConverter;
 import com.AirBnb.TimberAndStone.dtos.responses.booking.*;
 import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
 import com.AirBnb.TimberAndStone.exceptions.UnauthorizedException;
@@ -27,8 +28,9 @@ public class BookingService {
     private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
     private final BookingValidation bookingValidation;
+    private final BookingConverter bookingConverter;
 
-    public BookingService(BookingRepository bookingRepository, PeriodService periodService, UserService userService, RentalService rentalService, UserRepository userRepository, RentalRepository rentalRepository, BookingValidation bookingValidation) {
+    public BookingService(BookingRepository bookingRepository, PeriodService periodService, UserService userService, RentalService rentalService, UserRepository userRepository, RentalRepository rentalRepository, BookingValidation bookingValidation, BookingConverter bookingConverter) {
         this.bookingRepository = bookingRepository;
         this.periodService = periodService;
         this.userService = userService;
@@ -36,6 +38,7 @@ public class BookingService {
         this.userRepository = userRepository;
         this.rentalRepository = rentalRepository;
         this.bookingValidation = bookingValidation;
+        this.bookingConverter = bookingConverter;
     }
 
     public PostBookingResponse createBooking(BookingRequest bookingRequest) {
@@ -85,7 +88,7 @@ public class BookingService {
         //Finds all bookings, converts to DTO and returns list.
         List<Booking> bookings = bookingRepository.findAll();
         return bookings.stream()
-                .map(this::convertToAllBookingsResponse)
+                .map(bookingConverter::convertToAllBookingsResponse)
                 .collect(Collectors.toList());
     }
 
@@ -273,16 +276,6 @@ public class BookingService {
                 booking.getBookingStatus(),
                 booking.getNote(),
                 booking.getCreatedAt()
-        );
-    }
-
-    private AllBookingsResponse convertToAllBookingsResponse(Booking booking) {
-        return new AllBookingsResponse(
-                booking.getRental().getTitle(),
-                booking.getUser().getUsername(),
-                booking.getPeriod(),
-                booking.getTotalPrice(),
-                booking.getBookingStatus()
         );
     }
 
