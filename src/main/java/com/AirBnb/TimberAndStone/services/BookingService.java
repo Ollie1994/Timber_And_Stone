@@ -88,7 +88,7 @@ public class BookingService {
         //Finds all bookings, converts to DTO and returns list.
         List<Booking> bookings = bookingRepository.findAll();
         return bookings.stream()
-                .map(bookingConverter::convertToAllBookingsResponseRequest)
+                .map(bookingConverter::convertToAllBookingsResponse)
                 .collect(Collectors.toList());
     }
 

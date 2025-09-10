@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class BookingConverter {
 
 
-    public AllBookingsResponse convertToAllBookingsResponseRequest(Booking booking) {
+    public AllBookingsResponse convertToAllBookingsResponse(Booking booking) {
         return new AllBookingsResponse(
                 booking.getRental().getTitle(),
                 booking.getUser().getUsername(),
