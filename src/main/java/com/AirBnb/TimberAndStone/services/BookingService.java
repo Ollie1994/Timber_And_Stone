@@ -265,19 +265,6 @@ public class BookingService {
     }
     //------------------------------------------HELP METHODS----------------------------------------------------
 
-    /*private BookingResponse convertToBookingResponse(Booking booking) {
-        return new BookingResponse(
-                booking.getBookingNumber(),
-                booking.getRental().getTitle(),
-                booking.getUser().getUsername(),
-                booking.getNumberOfGuests(),
-                booking.getPeriod(),
-                booking.getTotalPrice(),
-                booking.getBookingStatus(),
-                booking.getNote(),
-                booking.getCreatedAt()
-        );
-    }*/
 
     private AllBookingsResponse convertToAllBookingsResponse(Booking booking) {
         return new AllBookingsResponse(
