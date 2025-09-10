@@ -1,17 +1,18 @@
 package com.AirBnb.TimberAndStone.services;
 
-import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalPageResponse;
-import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalPagesResponse;
-import com.AirBnb.TimberAndStone.exceptions.ConflictException;
-import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
-import com.AirBnb.TimberAndStone.exceptions.UnauthorizedException;
-import com.AirBnb.TimberAndStone.models.*;
-import com.AirBnb.TimberAndStone.repositories.RentalRepository;
-import com.AirBnb.TimberAndStone.repositories.UserRepository;
 import com.AirBnb.TimberAndStone.dtos.requests.rental.RentalAmenitiesRequest;
 import com.AirBnb.TimberAndStone.dtos.requests.rental.RentalRequest;
 import com.AirBnb.TimberAndStone.dtos.responses.rental.GetRentalsResponse;
+import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalPageResponse;
+import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalPagesResponse;
 import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalResponse;
+import com.AirBnb.TimberAndStone.exceptions.ConflictException;
+import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
+import com.AirBnb.TimberAndStone.exceptions.UnauthorizedException;
+import com.AirBnb.TimberAndStone.helpers.RentalHelper;
+import com.AirBnb.TimberAndStone.models.*;
+import com.AirBnb.TimberAndStone.repositories.RentalRepository;
+import com.AirBnb.TimberAndStone.repositories.UserRepository;
 import com.AirBnb.TimberAndStone.validation.RentalValidation;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,13 +33,15 @@ public class RentalService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final PeriodService periodService;
+    private final RentalHelper rentalHelper;
     private final RentalValidation rentalValidation;
 
-    public RentalService(RentalRepository rentalRepository, UserRepository userRepository, UserService userService, PeriodService periodService, RentalValidation rentalValidation) {
+    public RentalService(RentalRepository rentalRepository, UserRepository userRepository, UserService userService, PeriodService periodService, RentalHelper rentalHelper, RentalValidation rentalValidation) {
         this.rentalRepository = rentalRepository;
         this.userRepository = userRepository;
         this.userService = userService;
         this.periodService = periodService;
+        this.rentalHelper = rentalHelper;
         this.rentalValidation = rentalValidation;
     }
 
@@ -60,12 +63,9 @@ public class RentalService {
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Rental rental = new Rental();
-        Rating rating = new Rating();
 
         // Fields we set ourself
-        rating.setAverageRating(0.0);
-        rating.setNumberOfRatings(0);
-        rental.setRating(rating);
+        rental.setRating(rentalHelper.getDefaultRating());
         rental.setHost(user);
 
 
