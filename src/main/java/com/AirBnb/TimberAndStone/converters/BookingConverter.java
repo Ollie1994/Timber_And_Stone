@@ -1,6 +1,7 @@
 package com.AirBnb.TimberAndStone.converters;
 
 import com.AirBnb.TimberAndStone.dtos.responses.booking.BookingResponse;
+import com.AirBnb.TimberAndStone.dtos.responses.booking.PostBookingResponse;
 import com.AirBnb.TimberAndStone.models.Booking;
 import org.springframework.stereotype.Component;
 import com.AirBnb.TimberAndStone.dtos.responses.booking.AllBookingsResponse;
@@ -22,7 +23,6 @@ public class BookingConverter {
         );
     }
 
-
     public AllBookingsResponse convertToAllBookingsResponse(Booking booking) {
         return new AllBookingsResponse(
                 booking.getRental().getTitle(),
@@ -33,5 +33,16 @@ public class BookingConverter {
         );
     }
 
+    public PostBookingResponse convertToPostBookingResponse(Booking booking) {
+
+      return new PostBookingResponse(
+              "Rental has been booked successfully",
+              booking.getRental().getTitle(),
+              booking.getPeriod(),
+              booking.getTotalPrice(),
+              booking.getNote(),
+              booking.getBookingStatus()
+      );
+    }
 
 }

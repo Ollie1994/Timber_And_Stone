@@ -81,12 +81,7 @@ public class BookingService {
 
         Booking createdBooking = bookingRepository.save(booking);
 
-        return new PostBookingResponse("Rental has been booked successfully",
-                createdBooking.getRental().getTitle(),
-                createdBooking.getPeriod(),
-                createdBooking.getTotalPrice(),
-                createdBooking.getNote(),
-                createdBooking.getBookingStatus());
+        return bookingConverter.convertToPostBookingResponse(createdBooking);
     }
 
     public List<AllBookingsResponse> getAllBookings() {
