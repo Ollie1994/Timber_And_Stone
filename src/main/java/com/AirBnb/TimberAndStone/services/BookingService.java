@@ -166,7 +166,7 @@ public class BookingService {
         return convertToPatchBookingResponse("The booking has been updated successfully", booking);
     }
 
-    public PatchBookingResponse approveBooking(String id) {
+    /*public PatchBookingResponse approveBooking(String id) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
@@ -202,7 +202,7 @@ public class BookingService {
                 booking.getPaid(),
                 booking.getBookingStatus(),
                 booking.getNote());
-    }
+    }*/
 
     public PatchBookingResponse payAndConfirm(String id) {
         Booking booking = bookingRepository.findById(id)
