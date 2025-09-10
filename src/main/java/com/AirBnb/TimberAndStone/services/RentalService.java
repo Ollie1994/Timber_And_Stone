@@ -1,5 +1,6 @@
 package com.AirBnb.TimberAndStone.services;
 
+import com.AirBnb.TimberAndStone.converters.RentalConverter;
 import com.AirBnb.TimberAndStone.dtos.requests.rental.RentalAmenitiesRequest;
 import com.AirBnb.TimberAndStone.dtos.requests.rental.RentalRequest;
 import com.AirBnb.TimberAndStone.dtos.responses.rental.GetRentalsResponse;
@@ -35,14 +36,16 @@ public class RentalService {
     private final PeriodService periodService;
     private final RentalHelper rentalHelper;
     private final RentalValidation rentalValidation;
+    private final RentalConverter rentalConverter;
 
-    public RentalService(RentalRepository rentalRepository, UserRepository userRepository, UserService userService, PeriodService periodService, RentalHelper rentalHelper, RentalValidation rentalValidation) {
+    public RentalService(RentalRepository rentalRepository, UserRepository userRepository, UserService userService, PeriodService periodService, RentalHelper rentalHelper, RentalValidation rentalValidation, RentalConverter rentalConverter) {
         this.rentalRepository = rentalRepository;
         this.userRepository = userRepository;
         this.userService = userService;
         this.periodService = periodService;
         this.rentalHelper = rentalHelper;
         this.rentalValidation = rentalValidation;
+        this.rentalConverter = rentalConverter;
     }
 
 
@@ -316,7 +319,7 @@ public class RentalService {
     public List<RentalPagesResponse> getAllRentalPages() {
         List<Rental> rentals = rentalRepository.findAll();
         return rentals.stream()
-                .map(this::convertToRentalPagesResponse)
+                .map(rentalConverter::convertToRentalPagesResponse)
                 .collect(Collectors.toList());
     }
     public List<RentalPagesResponse> getRentalPagesByPricePerNightRange(Double minPrice, Double maxPrice) {
@@ -329,7 +332,7 @@ public class RentalService {
         List<Rental> rentals = rentalRepository.findByPricePerNightBetweenInclusive(minPrice, maxPrice);
 
         return rentals.stream()
-                .map(this::convertToRentalPagesResponse)
+                .map(rentalConverter::convertToRentalPagesResponse)
                 .collect(Collectors.toList());
     }
     // -------------------------- Help Methods -------------------------------------------------------------------------
@@ -475,18 +478,7 @@ public class RentalService {
     }
     // --------------------- Rental Pages Helpers ---------------------------------------------------
 
-    private RentalPagesResponse convertToRentalPagesResponse(Rental rental) {
-        return new RentalPagesResponse(
-                rental.getId(),
-                rental.getTitle(),
-                rental.getPhotos(),
-                rental.getCategory(),
-                rental.getDescription(),
-                rental.getAddress().getCountry(),
-                rental.getAddress().getCity(),
-                rental.getRating().getAverageRating());
 
-    }
 
 
 
