@@ -79,7 +79,7 @@ public class RentalService {
         rental.setCategory(rentalRequest.getCategory());
         rental.setCapacity(rentalRequest.getCapacity());
         rental.setDescription(rentalRequest.getDescription());
-        rental.setPolicy(getValidatedPolicy(rentalRequest.getPolicy()));
+        rental.setPolicy(rentalHelper.getValidatedPolicy(rentalRequest.getPolicy()));
 
 
         rentalRepository.save(rental);
@@ -162,7 +162,7 @@ public class RentalService {
             existingRental.setDescription(request.getDescription());
         }
         if (request.getPolicy() != null) {
-            existingRental.setPolicy(getValidatedPolicy(request.getPolicy()));
+            existingRental.setPolicy(rentalHelper.getValidatedPolicy(request.getPolicy()));
         }
 
         convertToGetRentalsResponse(existingRental);
@@ -409,23 +409,6 @@ public class RentalService {
             }
         }
         return matchingRentals;
-    }
-
-    private String getValidatedPolicy (String policy) {
-        //If policy is not null...
-        if(policy != null) {
-            //If empty, return default txt.
-            if(policy.trim().isEmpty()) {
-                return "Default policy txt";
-                //Else, return dto value
-            } else {
-                return policy;
-            }
-
-        } else {
-            //If policy is null
-            return "Default policy txt";
-        }
     }
 
     private boolean isAmenitiesMatching(List<Amenity> amenitiesRental, List<Amenity> amenitiesDTO) {
