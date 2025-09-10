@@ -56,9 +56,6 @@ public class BookingService {
         booking.setUser(userService.getAuthenticated());
 
         //Find and set rental
-        /*Rental rental = rentalRepository.findById(bookingRequest.getRental().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));*/
-
         Rental rental = rentalHelper.getRental(bookingRequest.getRental().getId());
 
         booking.setRental(rental);
