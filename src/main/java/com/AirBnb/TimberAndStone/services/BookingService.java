@@ -8,6 +8,7 @@ import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
 import com.AirBnb.TimberAndStone.exceptions.UnauthorizedException;
 import com.AirBnb.TimberAndStone.generators.BookingNumberGenerator;
 import com.AirBnb.TimberAndStone.helpers.BookingHelper;
+import com.AirBnb.TimberAndStone.helpers.RentalHelper;
 import com.AirBnb.TimberAndStone.models.*;
 import com.AirBnb.TimberAndStone.repositories.BookingRepository;
 import com.AirBnb.TimberAndStone.repositories.RentalRepository;
@@ -32,8 +33,9 @@ public class BookingService {
     private final BookingNumberGenerator bookingNumberGenerator;
     private final BookingConverter bookingConverter;
     private final BookingHelper bookingHelper;
+    private final RentalHelper rentalHelper;
 
-    public BookingService(BookingRepository bookingRepository, PeriodService periodService, UserService userService, RentalService rentalService, UserRepository userRepository, RentalRepository rentalRepository, BookingValidation bookingValidation, BookingConverter bookingConverter, BookingNumberGenerator bookingNumberGenerator, BookingHelper bookingHelper) {
+    public BookingService(BookingRepository bookingRepository, PeriodService periodService, UserService userService, RentalService rentalService, UserRepository userRepository, RentalRepository rentalRepository, BookingValidation bookingValidation, BookingConverter bookingConverter, BookingNumberGenerator bookingNumberGenerator, RentalHelper rentalHelper, BookingHelper bookingHelper) {
          this.bookingRepository = bookingRepository;
         this.periodService = periodService;
         this.userService = userService;
@@ -44,6 +46,7 @@ public class BookingService {
         this.bookingNumberGenerator = bookingNumberGenerator;
         this.bookingConverter = bookingConverter;
         this.bookingHelper = bookingHelper;
+        this.rentalHelper = rentalHelper;
     }
 
     public PostBookingResponse createBooking(BookingRequest bookingRequest) {
@@ -56,8 +59,8 @@ public class BookingService {
         booking.setUser(userService.getAuthenticated());
 
         //Find and set rental
-        Rental rental = rentalRepository.findById(bookingRequest.getRental().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
+        Rental rental = rentalHelper.getRental(bookingRequest.getRental().getId());
+
         booking.setRental(rental);
 
         //DTO values
