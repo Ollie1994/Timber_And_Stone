@@ -226,7 +226,7 @@ public class BookingService {
         List<Booking> bookings = bookingRepository.findByUserId(id);
 
         return bookings.stream()
-                .map(this::convertToBookingProfileResponse)
+                .map(bookingConverter::convertToBookingProfileResponse)
                 .collect(Collectors.toList());
     }
     //------------------------------------------HELP METHODS----------------------------------------------------
@@ -247,25 +247,4 @@ public class BookingService {
         );
     }
 
-
-    // ------------------------------------ Booking Profile  HELPERS ---------------------------------------------------
-    private BookingProfileResponse convertToBookingProfileResponse(Booking booking) {
-        return new BookingProfileResponse(
-               booking.getId(),
-                booking.getBookingNumber(),
-                booking.getUser(),
-                booking.getNumberOfGuests(),
-                booking.getRental(),
-                booking.getPeriod(),
-                booking.getTotalPrice(),
-                booking.getPaid(),
-                booking.getBookingStatus(),
-                booking.getNote(),
-                booking.getReviewedByUser(),
-                booking.getReviewedByHost(),
-                booking.getCreatedAt(),
-                booking.getUpdatedAt()
-
-        );
-    }
 }
