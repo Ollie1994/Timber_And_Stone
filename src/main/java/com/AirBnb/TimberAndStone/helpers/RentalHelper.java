@@ -21,6 +21,23 @@ public class RentalHelper {
         return rating;
     }
 
+    public String getValidatedPolicy (String policy) {
+        //If policy is not null...
+        if(policy != null) {
+            //If empty, return default txt.
+            if(policy.trim().isEmpty()) {
+                return "Default policy txt";
+                //Else, return input policy.
+            } else {
+                return policy;
+            }
+
+        } else {
+            //If policy is null
+            return "Default policy txt";
+        }
+    }
+
     public Rental getRental(String rentalID) {
         return rentalRepository.findById(rentalID)
                 .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));

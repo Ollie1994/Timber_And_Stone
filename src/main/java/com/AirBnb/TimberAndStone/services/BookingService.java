@@ -1,12 +1,13 @@
 package com.AirBnb.TimberAndStone.services;
 
+import com.AirBnb.TimberAndStone.converters.BookingConverter;
 import com.AirBnb.TimberAndStone.dtos.requests.booking.BookingRequest;
 import com.AirBnb.TimberAndStone.dtos.requests.booking.PatchBookingRequest;
-import com.AirBnb.TimberAndStone.converters.BookingConverter;
 import com.AirBnb.TimberAndStone.dtos.responses.booking.*;
 import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
 import com.AirBnb.TimberAndStone.exceptions.UnauthorizedException;
 import com.AirBnb.TimberAndStone.generators.BookingNumberGenerator;
+import com.AirBnb.TimberAndStone.helpers.BookingHelper;
 import com.AirBnb.TimberAndStone.helpers.RentalHelper;
 import com.AirBnb.TimberAndStone.models.*;
 import com.AirBnb.TimberAndStone.repositories.BookingRepository;
@@ -31,9 +32,10 @@ public class BookingService {
     private final BookingValidation bookingValidation;
     private final BookingNumberGenerator bookingNumberGenerator;
     private final BookingConverter bookingConverter;
+    private final BookingHelper bookingHelper;
     private final RentalHelper rentalHelper;
 
-    public BookingService(BookingRepository bookingRepository, PeriodService periodService, UserService userService, RentalService rentalService, UserRepository userRepository, RentalRepository rentalRepository, BookingValidation bookingValidation, BookingConverter bookingConverter, BookingNumberGenerator bookingNumberGenerator, RentalHelper rentalHelper) {
+    public BookingService(BookingRepository bookingRepository, PeriodService periodService, UserService userService, RentalService rentalService, UserRepository userRepository, RentalRepository rentalRepository, BookingValidation bookingValidation, BookingConverter bookingConverter, BookingNumberGenerator bookingNumberGenerator, RentalHelper rentalHelper, BookingHelper bookingHelper) {
          this.bookingRepository = bookingRepository;
         this.periodService = periodService;
         this.userService = userService;
@@ -43,6 +45,7 @@ public class BookingService {
         this.bookingValidation = bookingValidation;
         this.bookingNumberGenerator = bookingNumberGenerator;
         this.bookingConverter = bookingConverter;
+        this.bookingHelper = bookingHelper;
         this.rentalHelper = rentalHelper;
     }
 
@@ -81,12 +84,7 @@ public class BookingService {
 
         Booking createdBooking = bookingRepository.save(booking);
 
-        return new PostBookingResponse("Rental has been booked successfully",
-                createdBooking.getRental().getTitle(),
-                createdBooking.getPeriod(),
-                createdBooking.getTotalPrice(),
-                createdBooking.getNote(),
-                createdBooking.getBookingStatus());
+        return bookingConverter.convertToPostBookingResponse(createdBooking);
     }
 
     public List<AllBookingsResponse> getAllBookings() {
@@ -170,41 +168,7 @@ public class BookingService {
     }
 
     public PatchBookingResponse approveBooking(String id) {
-        Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
-
-        User currentUser = userService.getAuthenticated();
-
-        //Check if current user is the host of this rental.
-        if (!currentUser.getId().equals(booking.getRental().getHost().getId())) {
-            throw new UnauthorizedException("You do not have permission to approve this booking!");
-        }
-
-        BookingStatus status = booking.getBookingStatus();
-
-        if (status.equals(BookingStatus.APPROVED) || status.equals(BookingStatus.CONFIRMED)) {
-            throw new IllegalArgumentException("Booking is already approved and/or confirmed.");
-        }
-
-        if (status.equals(BookingStatus.CANCELLED)) {
-            throw new IllegalArgumentException("Booking is already cancelled and can not be approved");
-        }
-
-        booking.setBookingStatus(BookingStatus.APPROVED);
-
-        bookingRepository.save(booking);
-
-        return new PatchBookingResponse(
-                "The booking has been approved and is now awaiting payment.",
-                booking.getRental().getTitle(),
-                booking.getBookingNumber(),
-                booking.getUser().getUsername(),
-                booking.getNumberOfGuests(),
-                booking.getPeriod(),
-                booking.getTotalPrice(),
-                booking.getPaid(),
-                booking.getBookingStatus(),
-                booking.getNote());
+        return bookingHelper.approveBooking(id);
     }
 
     public PatchBookingResponse payAndConfirm(String id) {
@@ -265,7 +229,7 @@ public class BookingService {
         List<Booking> bookings = bookingRepository.findByUserId(id);
 
         return bookings.stream()
-                .map(this::convertToBookingProfileResponse)
+                .map(bookingConverter::convertToBookingProfileResponse)
                 .collect(Collectors.toList());
     }
     //------------------------------------------HELP METHODS----------------------------------------------------
@@ -286,25 +250,4 @@ public class BookingService {
         );
     }
 
-
-    // ------------------------------------ Booking Profile  HELPERS ---------------------------------------------------
-    private BookingProfileResponse convertToBookingProfileResponse(Booking booking) {
-        return new BookingProfileResponse(
-               booking.getId(),
-                booking.getBookingNumber(),
-                booking.getUser(),
-                booking.getNumberOfGuests(),
-                booking.getRental(),
-                booking.getPeriod(),
-                booking.getTotalPrice(),
-                booking.getPaid(),
-                booking.getBookingStatus(),
-                booking.getNote(),
-                booking.getReviewedByUser(),
-                booking.getReviewedByHost(),
-                booking.getCreatedAt(),
-                booking.getUpdatedAt()
-
-        );
-    }
 }
