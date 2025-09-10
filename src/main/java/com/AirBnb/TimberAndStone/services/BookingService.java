@@ -140,14 +140,16 @@ public class BookingService {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
+        bookingValidation.validatePatchRequest(request, booking);
+
+
         User currentUser = userService.getAuthenticated();
 
         if (!currentUser.getId().equals(booking.getUser().getId())) {
             throw new UnauthorizedException("You do not have permission to change this booking!");
         }
-
         if(request.getNumberOfGuests() != null) {
-            bookingValidation.validateNumberOfGuests(request.getNumberOfGuests(), booking.getRental());
+//            bookingValidation.validateNumberOfGuests(request.getNumberOfGuests(), booking.getRental());
             booking.setNumberOfGuests(request.getNumberOfGuests());
         }
 
@@ -161,7 +163,6 @@ public class BookingService {
             booking.setTotalPrice(periodService.getAmountOfDays(period) * booking.getRental().getPricePerNight());
         }
 
-        bookingValidation.validateBooking(booking);
 
         bookingRepository.save(booking);
         return convertToPatchBookingResponse("The booking has been updated successfully", booking);
