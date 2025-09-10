@@ -233,8 +233,6 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
     //------------------------------------------HELP METHODS----------------------------------------------------
-
-
     private PatchBookingResponse convertToPatchBookingResponse(String message, Booking booking) {
         return new PatchBookingResponse(
                 message,
@@ -249,5 +247,7 @@ public class BookingService {
                 booking.getNote()
         );
     }
+
+
 
 }
