@@ -13,6 +13,7 @@ import com.AirBnb.TimberAndStone.helpers.RentalHelper;
 import com.AirBnb.TimberAndStone.models.*;
 import com.AirBnb.TimberAndStone.repositories.RentalRepository;
 import com.AirBnb.TimberAndStone.repositories.UserRepository;
+import com.AirBnb.TimberAndStone.validation.RentalValidation;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,19 +34,24 @@ public class RentalService {
     private final UserService userService;
     private final PeriodService periodService;
     private final RentalHelper rentalHelper;
+    private final RentalValidation rentalValidation;
 
-    public RentalService(RentalRepository rentalRepository, UserRepository userRepository, UserService userService, PeriodService periodService, RentalHelper rentalHelper) {
+    public RentalService(RentalRepository rentalRepository, UserRepository userRepository, UserService userService, PeriodService periodService, RentalHelper rentalHelper, RentalValidation rentalValidation) {
         this.rentalRepository = rentalRepository;
         this.userRepository = userRepository;
         this.userService = userService;
         this.periodService = periodService;
         this.rentalHelper = rentalHelper;
+        this.rentalValidation = rentalValidation;
     }
 
 
 // --------------------------------- Methods ---------------------------------------------------------------------------
 
     public RentalResponse createRental(RentalRequest rentalRequest) {
+
+
+        rentalValidation.validateRentalRequest(rentalRequest);
 
         // Detta under sätter host som den som är inloggad
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -56,51 +62,12 @@ public class RentalService {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-
         Rental rental = new Rental();
 
         // Fields we set ourself
         rental.setRating(rentalHelper.getDefaultRating());
         rental.setHost(user);
 
-        // Validate title can not be empty or null
-        String title = rentalRequest.getTitle();
-        if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Title can not be null or empty");
-        }
-        // Validate photos is not more than 10
-        // Changed to max 5 photos to match our Figma design
-        List<String> photos = rentalRequest.getPhotos();
-        if (photos != null && photos.size() > 5) {
-            throw new IllegalArgumentException("Can not have more than 5 photos");
-        }
-
-        // Validate pricePerNight is between 1-1000000
-        Double pricePerNight = rentalRequest.getPricePerNight();
-        if (pricePerNight == null) {
-            throw new IllegalArgumentException("Price per night can not be null");
-        }
-        if (pricePerNight < 1 || pricePerNight > 1000000) {
-            throw new IllegalArgumentException("Price per night must be between 1 and 1000000");
-        }
-        // Validate category is not null
-        Category category = rentalRequest.getCategory();
-        if (category == null) {
-            throw new IllegalArgumentException("Category can not be null");
-        }
-
-        // Validate capacity is at least 1
-        Integer capacity = rentalRequest.getCapacity();
-        if (capacity == null || capacity < 1) {
-            throw new IllegalArgumentException("Capacity must be at least 1");
-        }
-
-        // Validate description is not empty or null
-        String description = rentalRequest.getDescription();
-        if (description == null || description.trim().isEmpty()) {
-            throw new IllegalArgumentException("Description can not be null or empty");
-        }
 
         // DTON
         rental.setAddress(rentalRequest.getAddress());
