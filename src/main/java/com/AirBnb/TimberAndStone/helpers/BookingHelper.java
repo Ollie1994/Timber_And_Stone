@@ -6,9 +6,11 @@ import com.AirBnb.TimberAndStone.exceptions.UnauthorizedException;
 import com.AirBnb.TimberAndStone.models.Booking;
 import com.AirBnb.TimberAndStone.models.BookingStatus;
 import com.AirBnb.TimberAndStone.models.User;
-import com.AirBnb.TimberAndStone.services.UserService;
 import com.AirBnb.TimberAndStone.repositories.BookingRepository;
+import com.AirBnb.TimberAndStone.services.UserService;
+import org.springframework.stereotype.Component;
 
+@Component
 public class BookingHelper {
 
     private UserService userService;
