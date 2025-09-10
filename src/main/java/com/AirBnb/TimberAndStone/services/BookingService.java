@@ -164,7 +164,7 @@ public class BookingService {
         bookingValidation.validateBooking(booking);
 
         bookingRepository.save(booking);
-        return convertToPatchBookingResponse("The booking has been updated successfully", booking);
+        return bookingConverter.convertToPatchBookingResponse("The booking has been updated successfully", booking);
     }
 
     public PatchBookingResponse approveBooking(String id) {
@@ -195,17 +195,7 @@ public class BookingService {
         booking.setBookingStatus(BookingStatus.CONFIRMED);
         booking.setPaid(true);
         bookingRepository.save(booking);
-        return new PatchBookingResponse(
-                "The booking has been confirmed and paid!",
-                booking.getRental().getTitle(),
-                booking.getBookingNumber(),
-                booking.getUser().getUsername(),
-                booking.getNumberOfGuests(),
-                booking.getPeriod(),
-                booking.getTotalPrice(),
-                booking.getPaid(),
-                booking.getBookingStatus(),
-                booking.getNote());
+        return bookingConverter.convertToPatchBookingResponse("The booking has been confirmed and paid!", booking);
     }
 
     public void deleteBooking(String id) {
@@ -235,19 +225,6 @@ public class BookingService {
     //------------------------------------------HELP METHODS----------------------------------------------------
 
 
-    private PatchBookingResponse convertToPatchBookingResponse(String message, Booking booking) {
-        return new PatchBookingResponse(
-                message,
-                booking.getRental().getTitle(),
-                booking.getBookingNumber(),
-                booking.getUser().getUsername(),
-                booking.getNumberOfGuests(),
-                booking.getPeriod(),
-                booking.getTotalPrice(),
-                booking.getPaid(),
-                booking.getBookingStatus(),
-                booking.getNote()
-        );
-    }
+
 
 }
