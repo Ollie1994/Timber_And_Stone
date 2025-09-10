@@ -63,9 +63,11 @@ public class BookingHelper {
                 booking.getBookingStatus(),
                 booking.getNote());
     }
-    // Autovalues
-        public void setAutoValues (Booking booking, Period period, PeriodService periodService, Double pricePerNight, String userID, Rental rental, BookingNumberGenerator bookingNumberGenerator) {
-        booking.setTotalPrice(periodService.getAmountOfDays(period) * rental.getPricePerNight());
+
+        // Autovalues
+        public void setAutoValues (Booking booking, Period period, PeriodService periodService, Rental rental, BookingNumberGenerator bookingNumberGenerator) {
+        Double totalPrice = periodService.getAmountOfDays(period) * rental.getPricePerNight();
+        booking.setTotalPrice(totalPrice);
         booking.setPaid(false);
         booking.setBookingStatus(BookingStatus.PENDING);
         booking.setCreatedAt(LocalDateTime.now());
