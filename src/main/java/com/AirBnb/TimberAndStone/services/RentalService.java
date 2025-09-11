@@ -262,8 +262,8 @@ public class RentalService {
                 .collect(Collectors.toList());
     }
 
-    public List<GetRentalsResponse> getRentalsDTOByCountry(String country) {
-        List<Rental> rentals = getRentalsByCountry(country);
+    public List<GetRentalsResponse> getRentalsByCountry(String country) {
+        List<Rental> rentals = rentalHelper.getRentalsByCountry(country);
 
         //return as DTO
         return rentals.stream()
@@ -337,51 +337,12 @@ public class RentalService {
     }
     // -------------------------- Help Methods -------------------------------------------------------------------------
 
-    private List<Rental> getRentalsByCountry(String country) {
-
-        //Trim whitespace from country input
-        String trimmedCountry = StringUtils.trimAllWhitespace(country);
-
-        //Make a list of rentals with trimmed country names.
-        List<Rental> trimmedRentals = rentalRepository.findAll();
-
-        for(Rental rental : trimmedRentals) {
-            rental.setAddress(new Address(
-                    StringUtils.trimAllWhitespace(rental.getAddress().getCountry()),
-                    rental.getAddress().getCity(),
-                    rental.getAddress().getPostalCode(),
-                    rental.getAddress().getStreetName(),
-                    rental.getAddress().getStreetNumber(),
-                    rental.getAddress().getLatitude(),
-                    rental.getAddress().getLongitude()));
-        }
-
-        //Filter only matching trimmed rentals to trimmed country
-        trimmedRentals = trimmedRentals.stream()
-                .filter(rental -> rental.getAddress().getCountry().equalsIgnoreCase(trimmedCountry))
-                .toList();
-
-        //New list for holding matching untrimmed rentals, to output the untrimmed country.
-        List<Rental> matchingRentals = new ArrayList<>();
-
-        //For each rental.id, compare to trimmedRental.id and add to matchingRentals.
-        List<Rental> rentals = rentalRepository.findAll();
-        for (Rental rental : rentals) {
-            for (Rental trimmedRental : trimmedRentals) {
-                if(rental.getId().equals(trimmedRental.getId())) {
-                    matchingRentals.add(rental);
-                }
-            }
-        }
-        return matchingRentals;
-    }
-
     private List<Rental> getRentalsByCountryAndCity(String country, String city) {
         //Trim all city names
         String trimmedCity = StringUtils.trimAllWhitespace(city);
 
         //Make a list of matching country rentals with trimmed city names.
-        List<Rental> trimmedRentals = getRentalsByCountry(country);
+        List<Rental> trimmedRentals = rentalHelper.getRentalsByCountry(country);
 
         for(Rental rental : trimmedRentals) {
             rental.setAddress(new Address(
