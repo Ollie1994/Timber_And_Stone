@@ -16,7 +16,6 @@ import com.AirBnb.TimberAndStone.repositories.UserRepository;
 import com.AirBnb.TimberAndStone.validation.BookingValidation;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,15 +71,16 @@ public class BookingService {
         booking.setNumberOfGuests(bookingRequest.getNumberOfGuests());
 
         //Autovalues
-        booking.setTotalPrice(periodService.getAmountOfDays(period) * rental.getPricePerNight());
+        /*booking.setTotalPrice(periodService.getAmountOfDays(period) * rental.getPricePerNight());
         booking.setPaid(false);
         booking.setBookingStatus(BookingStatus.PENDING);
         booking.setCreatedAt(LocalDateTime.now());
         booking.setUpdatedAt(LocalDateTime.now());
         booking.setBookingNumber(bookingNumberGenerator.generateBookingNumber(userService.getAuthenticated().getId(), rental.getId()));
         booking.setReviewedByUser(false);
-        booking.setReviewedByHost(false);
-
+        booking.setReviewedByHost(false);*/
+        //Autovalues
+        bookingHelper.setAutoValues(booking, period, rental);
 
         Booking createdBooking = bookingRepository.save(booking);
 
@@ -137,17 +137,18 @@ public class BookingService {
     }
 
     public PatchBookingResponse patchBooking(String id, PatchBookingRequest request) {
-        Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+
+
+        Booking booking = bookingValidation.validatePatchRequest(request, id);
+
 
         User currentUser = userService.getAuthenticated();
 
         if (!currentUser.getId().equals(booking.getUser().getId())) {
             throw new UnauthorizedException("You do not have permission to change this booking!");
         }
-
         if(request.getNumberOfGuests() != null) {
-            bookingValidation.validateNumberOfGuests(request.getNumberOfGuests(), booking.getRental());
+//            bookingValidation.validateNumberOfGuests(request.getNumberOfGuests(), booking.getRental());
             booking.setNumberOfGuests(request.getNumberOfGuests());
         }
 
@@ -161,7 +162,6 @@ public class BookingService {
             booking.setTotalPrice(periodService.getAmountOfDays(period) * booking.getRental().getPricePerNight());
         }
 
-        bookingValidation.validateBooking(booking);
 
         bookingRepository.save(booking);
         return bookingConverter.convertToPatchBookingResponse("The booking has been updated successfully", booking);
@@ -222,9 +222,5 @@ public class BookingService {
                 .map(bookingConverter::convertToBookingProfileResponse)
                 .collect(Collectors.toList());
     }
-    //------------------------------------------HELP METHODS----------------------------------------------------
-
-
-
 
 }

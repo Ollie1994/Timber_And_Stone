@@ -84,7 +84,7 @@ public class RentalController {
 
     @GetMapping("/country/{country}")
     public ResponseEntity<List<GetRentalsResponse>> getRentalsByCountry(@PathVariable String country) {
-        List<GetRentalsResponse> response = rentalService.getRentalsDTOByCountry(country);
+        List<GetRentalsResponse> response = rentalService.getRentalsByCountry(country);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
