@@ -18,11 +18,13 @@ public class BookingHelper {
     private UserService userService;
     private BookingRepository bookingRepository;
     private BookingNumberGenerator bookingNumberGenerator;
+    private PeriodService periodService;
 
-    public BookingHelper(BookingRepository bookingRepository, UserService userService, BookingNumberGenerator bookingNumberGenerator) {
+    public BookingHelper(BookingRepository bookingRepository, UserService userService, BookingNumberGenerator bookingNumberGenerator, PeriodService periodService) {
         this.bookingRepository = bookingRepository;
         this.userService = userService;
         this.bookingNumberGenerator = bookingNumberGenerator;
+        this.periodService = periodService;
 
     }
 
@@ -65,9 +67,8 @@ public class BookingHelper {
     }
 
         // Autovalues
-        public void setAutoValues (Booking booking, Period period, PeriodService periodService, Rental rental, BookingNumberGenerator bookingNumberGenerator) {
-        Double totalPrice = periodService.getAmountOfDays(period) * rental.getPricePerNight();
-        booking.setTotalPrice(totalPrice);
+        public void setAutoValues (Booking booking, Period period, Rental rental) {
+        booking.setTotalPrice(periodService.getAmountOfDays(period) * rental.getPricePerNight());
         booking.setPaid(false);
         booking.setBookingStatus(BookingStatus.PENDING);
         booking.setCreatedAt(LocalDateTime.now());

@@ -79,7 +79,8 @@ public class BookingService {
         booking.setBookingNumber(bookingNumberGenerator.generateBookingNumber(userService.getAuthenticated().getId(), rental.getId()));
         booking.setReviewedByUser(false);
         booking.setReviewedByHost(false);*/
-        bookingHelper.setAutoValues(booking, period, periodService, rental, bookingNumberGenerator);
+        //Autovalues
+        bookingHelper.setAutoValues(booking, period, rental);
 
         Booking createdBooking = bookingRepository.save(booking);
 
