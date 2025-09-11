@@ -1,11 +1,8 @@
 package com.AirBnb.TimberAndStone.converters;
 
-import com.AirBnb.TimberAndStone.dtos.responses.booking.BookingProfileResponse;
-import com.AirBnb.TimberAndStone.dtos.responses.booking.BookingResponse;
-import com.AirBnb.TimberAndStone.dtos.responses.booking.PostBookingResponse;
+import com.AirBnb.TimberAndStone.dtos.responses.booking.*;
 import com.AirBnb.TimberAndStone.models.Booking;
 import org.springframework.stereotype.Component;
-import com.AirBnb.TimberAndStone.dtos.responses.booking.AllBookingsResponse;
 
 @Component
 public class BookingConverter {
@@ -45,6 +42,7 @@ public class BookingConverter {
               booking.getBookingStatus()
       );
     }
+
     public BookingProfileResponse convertToBookingProfileResponse(Booking booking) {
         return new BookingProfileResponse(
                 booking.getId(),
@@ -64,4 +62,18 @@ public class BookingConverter {
         );
     }
 
+    public PatchBookingResponse convertToPatchBookingResponse(String message, Booking booking) {
+        return new PatchBookingResponse(
+                message,
+                booking.getRental().getTitle(),
+                booking.getBookingNumber(),
+                booking.getUser().getUsername(),
+                booking.getNumberOfGuests(),
+                booking.getPeriod(),
+                booking.getTotalPrice(),
+                booking.getPaid(),
+                booking.getBookingStatus(),
+                booking.getNote()
+        );
+    }
 }
