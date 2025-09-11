@@ -115,7 +115,8 @@ public class RentalHelper {
         }
     }
 
-    private static List<Rental> callTrimCommand(RentalCommand command, List<Rental> rentals) {
+    // Calls a rental command for each rental in a rentals list.
+    private static List<Rental> callRentalCommand(RentalCommand command, List<Rental> rentals) {
         for(Rental rental : rentals) {
             command.execute(rental);
         }
@@ -160,7 +161,7 @@ public class RentalHelper {
         List<Rental> allRentals = rentalRepository.findAll();
 
        // List<Rental> trimmedRentals = trimCountryNamesFromRentalList(allRentals);
-        List<Rental> trimmedRentals = callTrimCommand(new trimCountry(), allRentals);
+        List<Rental> trimmedRentals = callRentalCommand(new trimCountry(), allRentals);
 
         //Filter only matching trimmed rentals to trimmed country
         trimmedRentals = trimmedRentals.stream()
@@ -189,8 +190,8 @@ public class RentalHelper {
         //Make a list of matching country rentals with trimmed city names.
         List<Rental> rentalsByCountry = getRentalsByCountry(country);
 
-        List<Rental> trimmedRentals = callTrimCommand(new trimCountry(), rentalsByCountry);
-        trimmedRentals = callTrimCommand(new trimCity(), trimmedRentals);
+        List<Rental> trimmedRentals = callRentalCommand(new trimCountry(), rentalsByCountry);
+        trimmedRentals = callRentalCommand(new trimCity(), trimmedRentals);
 
         //Filter only matching trimmed rentals to trimmed city
         trimmedRentals = trimmedRentals.stream()
