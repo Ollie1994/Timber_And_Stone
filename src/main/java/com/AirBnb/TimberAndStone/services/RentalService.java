@@ -318,7 +318,7 @@ public class RentalService {
     public List<RentalPagesResponse> getAllRentalPages() {
         List<Rental> rentals = rentalRepository.findAll();
         return rentals.stream()
-                .map(this::convertToRentalPagesResponse)
+                .map(rentalConverter::convertToRentalPagesResponse)
                 .collect(Collectors.toList());
     }
 
@@ -332,7 +332,7 @@ public class RentalService {
         List<Rental> rentals = rentalRepository.findByPricePerNightBetweenInclusive(minPrice, maxPrice);
 
         return rentals.stream()
-                .map(this::convertToRentalPagesResponse)
+                .map(rentalConverter::convertToRentalPagesResponse)
                 .collect(Collectors.toList());
     }
     // -------------------------- Help Methods -------------------------------------------------------------------------
@@ -447,18 +447,7 @@ public class RentalService {
 
     // --------------------- Rental Pages Helpers ---------------------------------------------------
 
-    private RentalPagesResponse convertToRentalPagesResponse(Rental rental) {
-        return new RentalPagesResponse(
-                rental.getId(),
-                rental.getTitle(),
-                rental.getPhotos(),
-                rental.getCategory(),
-                rental.getDescription(),
-                rental.getAddress().getCountry(),
-                rental.getAddress().getCity(),
-                rental.getRating().getAverageRating());
 
-    }
 
 
 
