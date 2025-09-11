@@ -16,7 +16,6 @@ import com.AirBnb.TimberAndStone.repositories.UserRepository;
 import com.AirBnb.TimberAndStone.validation.BookingValidation;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,15 +71,16 @@ public class BookingService {
         booking.setNumberOfGuests(bookingRequest.getNumberOfGuests());
 
         //Autovalues
-        booking.setTotalPrice(periodService.getAmountOfDays(period) * rental.getPricePerNight());
+        /*booking.setTotalPrice(periodService.getAmountOfDays(period) * rental.getPricePerNight());
         booking.setPaid(false);
         booking.setBookingStatus(BookingStatus.PENDING);
         booking.setCreatedAt(LocalDateTime.now());
         booking.setUpdatedAt(LocalDateTime.now());
         booking.setBookingNumber(bookingNumberGenerator.generateBookingNumber(userService.getAuthenticated().getId(), rental.getId()));
         booking.setReviewedByUser(false);
-        booking.setReviewedByHost(false);
-
+        booking.setReviewedByHost(false);*/
+        //Autovalues
+        bookingHelper.setAutoValues(booking, period, rental);
 
         Booking createdBooking = bookingRepository.save(booking);
 
