@@ -70,16 +70,6 @@ public class BookingService {
         booking.setNote(bookingRequest.getNote());
         booking.setNumberOfGuests(bookingRequest.getNumberOfGuests());
 
-        //Autovalues
-        /*booking.setTotalPrice(periodService.getAmountOfDays(period) * rental.getPricePerNight());
-        booking.setPaid(false);
-        booking.setBookingStatus(BookingStatus.PENDING);
-        booking.setCreatedAt(LocalDateTime.now());
-        booking.setUpdatedAt(LocalDateTime.now());
-        booking.setBookingNumber(bookingNumberGenerator.generateBookingNumber(userService.getAuthenticated().getId(), rental.getId()));
-        booking.setReviewedByUser(false);
-        booking.setReviewedByHost(false);*/
-        //Autovalues
         bookingHelper.setAutoValues(booking, period, rental);
 
         Booking createdBooking = bookingRepository.save(booking);
