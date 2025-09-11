@@ -5,6 +5,7 @@ import com.AirBnb.TimberAndStone.dtos.requests.booking.PatchBookingRequest;
 import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
 import com.AirBnb.TimberAndStone.models.Booking;
 import com.AirBnb.TimberAndStone.models.Rental;
+import com.AirBnb.TimberAndStone.repositories.BookingRepository;
 import com.AirBnb.TimberAndStone.repositories.RentalRepository;
 import com.AirBnb.TimberAndStone.services.PeriodService;
 import org.springframework.stereotype.Component;
@@ -13,10 +14,12 @@ import org.springframework.stereotype.Component;
 public class BookingValidation {
     private final RentalRepository rentalRepository;
     private final PeriodService periodService;
+    private final BookingRepository bookingRepository;
 
-    public BookingValidation(RentalRepository rentalRepository, PeriodService periodService) {
+    public BookingValidation(RentalRepository rentalRepository, PeriodService periodService, BookingRepository bookingRepository) {
         this.rentalRepository = rentalRepository;
         this.periodService = periodService;
+        this.bookingRepository = bookingRepository;
     }
 
     public void validateBookingRequest(BookingRequest request) {
@@ -33,7 +36,9 @@ public class BookingValidation {
     }
 
 
-    public void validatePatchRequest(PatchBookingRequest request, Booking booking) {
+    public Booking validatePatchRequest(PatchBookingRequest request, String id) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
         if (request.getStartDate() != null && request.getEndDate() != null) {
             if (request.getStartDate().isAfter(request.getEndDate()) || request.getStartDate().equals(request.getEndDate())) {
@@ -44,6 +49,7 @@ public class BookingValidation {
         if (request.getNumberOfGuests() != null) {
             validateNumberOfGuests(request.getNumberOfGuests(), booking.getRental());
         }
+        return booking;
     }
 
 

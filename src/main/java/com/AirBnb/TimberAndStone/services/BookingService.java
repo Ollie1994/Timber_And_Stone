@@ -137,10 +137,9 @@ public class BookingService {
     }
 
     public PatchBookingResponse patchBooking(String id, PatchBookingRequest request) {
-        Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
-        bookingValidation.validatePatchRequest(request, booking);
+
+        Booking booking = bookingValidation.validatePatchRequest(request, id);
 
 
         User currentUser = userService.getAuthenticated();
