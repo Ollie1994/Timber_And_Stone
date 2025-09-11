@@ -1,5 +1,6 @@
 package com.AirBnb.TimberAndStone.services;
 
+import com.AirBnb.TimberAndStone.converters.RentalConverter;
 import com.AirBnb.TimberAndStone.dtos.requests.rental.RentalAmenitiesRequest;
 import com.AirBnb.TimberAndStone.dtos.requests.rental.RentalRequest;
 import com.AirBnb.TimberAndStone.dtos.responses.rental.GetRentalsResponse;
@@ -35,14 +36,16 @@ public class RentalService {
     private final PeriodService periodService;
     private final RentalHelper rentalHelper;
     private final RentalValidation rentalValidation;
+    private final RentalConverter rentalConverter;
 
-    public RentalService(RentalRepository rentalRepository, UserRepository userRepository, UserService userService, PeriodService periodService, RentalHelper rentalHelper, RentalValidation rentalValidation) {
+    public RentalService(RentalRepository rentalRepository, UserRepository userRepository, UserService userService, PeriodService periodService, RentalHelper rentalHelper, RentalValidation rentalValidation, RentalConverter rentalConverter) {
         this.rentalRepository = rentalRepository;
         this.userRepository = userRepository;
         this.userService = userService;
         this.periodService = periodService;
         this.rentalHelper = rentalHelper;
         this.rentalValidation = rentalValidation;
+        this.rentalConverter = rentalConverter;
     }
 
 
@@ -90,21 +93,21 @@ public class RentalService {
         List<Rental> rentals = rentalRepository.findAll();
 
         return rentals.stream()
-                .map(this::convertToGetRentalsResponse)
+                .map(rentalConverter::convertToGetRentalsResponse)
                 .collect(Collectors.toList());
     }
 
     public GetRentalsResponse getRentalById(String id) {
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
-        return convertToGetRentalsResponse(rental);
+        return rentalConverter.convertToGetRentalsResponse(rental);
     }
 
     public List<GetRentalsResponse> getRentalsByCategory(Category category) {
         List<Rental> rentals = rentalRepository.findByCategory(category);
 
         return rentals.stream()
-                .map(this::convertToGetRentalsResponse)
+                .map(rentalConverter::convertToGetRentalsResponse)
                 .collect(Collectors.toList());
     }
 
@@ -118,7 +121,7 @@ public class RentalService {
         List<Rental> rentals = rentalRepository.findByPricePerNightBetweenInclusive(minPrice, maxPrice);
 
         return rentals.stream()
-                .map(this::convertToGetRentalsResponse)
+                .map(rentalConverter::convertToGetRentalsResponse)
                 .collect(Collectors.toList());
     }
 
@@ -165,9 +168,8 @@ public class RentalService {
             existingRental.setPolicy(rentalHelper.getValidatedPolicy(request.getPolicy()));
         }
 
-        convertToGetRentalsResponse(existingRental);
         rentalRepository.save(existingRental);
-        return convertToGetRentalsResponse(existingRental);
+        return rentalConverter.convertToGetRentalsResponse(existingRental);
     }
 
     public void deleteRental(String id) {
@@ -180,7 +182,7 @@ public class RentalService {
         List<Rental> rentals = rentalRepository.findByRatingAverageRatingGreaterThanEqualAndRatingNumberOfRatingsGreaterThanEqual(minAvgRating, minNumberOfRatings);
 
         return rentals.stream()
-                .map(this::convertToGetRentalsResponse)
+                .map(rentalConverter::convertToGetRentalsResponse)
                 .collect(Collectors.toList());
     }
 
@@ -199,7 +201,7 @@ public class RentalService {
 
         //Converts all rentals to DTO and returns
         return rentals.stream()
-                .map(this::convertToGetRentalsResponse)
+                .map(rentalConverter::convertToGetRentalsResponse)
                 .collect(Collectors.toList());
     }
 
@@ -233,7 +235,7 @@ public class RentalService {
         }
         //Converts to DTO and returns
         return matchingRentals.stream()
-                .map(this::convertToGetRentalsResponse)
+                .map(rentalConverter::convertToGetRentalsResponse)
                 .collect(Collectors.toList());
     }
 
@@ -253,19 +255,19 @@ public class RentalService {
                     List<Period> matchingPeriods = rental.getAvailablePeriods().stream()
                             .filter(period -> periodService.isPeriodMatching(period, startDate, endDate))
                             .collect(Collectors.toList());
-                    GetRentalsResponse response = convertToGetRentalsResponse(rental);
+                    GetRentalsResponse response = rentalConverter.convertToGetRentalsResponse(rental);
                     //response.setPeriods(matchingPeriods);
                     return response;
                 })
                 .collect(Collectors.toList());
     }
 
-    public List<GetRentalsResponse> getRentalsDTOByCountry(String country) {
-        List<Rental> rentals = getRentalsByCountry(country);
+    public List<GetRentalsResponse> getRentalsByCountry(String country) {
+        List<Rental> rentals = rentalHelper.getRentalsByCountry(country);
 
         //return as DTO
         return rentals.stream()
-                .map(this::convertToGetRentalsResponse)
+                .map(rentalConverter::convertToGetRentalsResponse)
                 .collect(Collectors.toList());
     }
 
@@ -274,7 +276,7 @@ public class RentalService {
 
         //return as DTO
         return rentals.stream()
-                .map(this::convertToGetRentalsResponse)
+                .map(rentalConverter::convertToGetRentalsResponse)
                 .collect(Collectors.toList());
     }
 
@@ -287,7 +289,7 @@ public class RentalService {
                 .collect(Collectors.toList());
 
         return matchingRentals.stream()
-                .map(this::convertToGetRentalsResponse)
+                .map(rentalConverter::convertToGetRentalsResponse)
                 .collect(Collectors.toList());
     }
 
@@ -301,7 +303,7 @@ public class RentalService {
             return List.of();
         }
         return rentals.stream()
-                .map(this::convertToGetRentalsResponse)
+                .map(rentalConverter::convertToGetRentalsResponse)
                 .collect(Collectors.toList());
     }
 
@@ -309,16 +311,17 @@ public class RentalService {
     public RentalPageResponse getRentalPageById(String id) {
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Rental not found (P)"));
-        return convertToRentalPageResponse(rental);
+        return rentalConverter.convertToRentalPageResponse(rental);
     }
 
     // -------------------------- Rental pages --------------------------------------------------------------------------
     public List<RentalPagesResponse> getAllRentalPages() {
         List<Rental> rentals = rentalRepository.findAll();
         return rentals.stream()
-                .map(this::convertToRentalPagesResponse)
+                .map(rentalConverter::convertToRentalPagesResponse)
                 .collect(Collectors.toList());
     }
+
     public List<RentalPagesResponse> getRentalPagesByPricePerNightRange(Double minPrice, Double maxPrice) {
         if(minPrice <= 0 || maxPrice <= 0) {
             throw new IllegalArgumentException("Price must be greater than 0");
@@ -329,56 +332,17 @@ public class RentalService {
         List<Rental> rentals = rentalRepository.findByPricePerNightBetweenInclusive(minPrice, maxPrice);
 
         return rentals.stream()
-                .map(this::convertToRentalPagesResponse)
+                .map(rentalConverter::convertToRentalPagesResponse)
                 .collect(Collectors.toList());
     }
     // -------------------------- Help Methods -------------------------------------------------------------------------
-
-    private List<Rental> getRentalsByCountry(String country) {
-
-        //Trim whitespace from country input
-        String trimmedCountry = StringUtils.trimAllWhitespace(country);
-
-        //Make a list of rentals with trimmed country names.
-        List<Rental> trimmedRentals = rentalRepository.findAll();
-
-        for(Rental rental : trimmedRentals) {
-            rental.setAddress(new Address(
-                    StringUtils.trimAllWhitespace(rental.getAddress().getCountry()),
-                    rental.getAddress().getCity(),
-                    rental.getAddress().getPostalCode(),
-                    rental.getAddress().getStreetName(),
-                    rental.getAddress().getStreetNumber(),
-                    rental.getAddress().getLatitude(),
-                    rental.getAddress().getLongitude()));
-        }
-
-        //Filter only matching trimmed rentals to trimmed country
-        trimmedRentals = trimmedRentals.stream()
-                .filter(rental -> rental.getAddress().getCountry().equalsIgnoreCase(trimmedCountry))
-                .toList();
-
-        //New list for holding matching untrimmed rentals, to output the untrimmed country.
-        List<Rental> matchingRentals = new ArrayList<>();
-
-        //For each rental.id, compare to trimmedRental.id and add to matchingRentals.
-        List<Rental> rentals = rentalRepository.findAll();
-        for (Rental rental : rentals) {
-            for (Rental trimmedRental : trimmedRentals) {
-                if(rental.getId().equals(trimmedRental.getId())) {
-                    matchingRentals.add(rental);
-                }
-            }
-        }
-        return matchingRentals;
-    }
 
     private List<Rental> getRentalsByCountryAndCity(String country, String city) {
         //Trim all city names
         String trimmedCity = StringUtils.trimAllWhitespace(city);
 
         //Make a list of matching country rentals with trimmed city names.
-        List<Rental> trimmedRentals = getRentalsByCountry(country);
+        List<Rental> trimmedRentals = rentalHelper.getRentalsByCountry(country);
 
         for(Rental rental : trimmedRentals) {
             rental.setAddress(new Address(
@@ -410,57 +374,5 @@ public class RentalService {
         }
         return matchingRentals;
     }
-
-    private GetRentalsResponse convertToGetRentalsResponse(Rental rental) {
-        return new GetRentalsResponse(
-                rental.getTitle(),
-                rental.getCategory(),
-                rental.getCapacity(),
-                rental.getPricePerNight(),
-                rental.getAddress().getCountry(),
-                rental.getAddress().getCity(),
-                rental.getRating().getAverageRating());
-    }
-
-    // --------------------- Rental Page Helpers ---------------------------------------------------
-
-
-    private RentalPageResponse convertToRentalPageResponse(Rental rental) {
-        return new RentalPageResponse(
-                rental.getId(),
-                rental.getTitle(),
-                rental.getPhotos(),
-                rental.getPricePerNight(),
-                rental.getRating(),
-                rental.getHost(),
-                rental.getAddress(),
-                rental.getCategory(),
-                rental.getAmenities(),
-                rental.getCapacity(),
-                rental.getAvailablePeriods(),
-                rental.getDescription(),
-                rental.getPolicy(),
-                rental.getCreatedAt(),
-                rental.getUpdatedAt()
-        );
-    }
-    // --------------------- Rental Pages Helpers ---------------------------------------------------
-
-    private RentalPagesResponse convertToRentalPagesResponse(Rental rental) {
-        return new RentalPagesResponse(
-                rental.getId(),
-                rental.getTitle(),
-                rental.getPhotos(),
-                rental.getCategory(),
-                rental.getDescription(),
-                rental.getAddress().getCountry(),
-                rental.getAddress().getCity(),
-                rental.getRating().getAverageRating());
-
-    }
-
-
-
-
 }
 
