@@ -64,7 +64,7 @@ public class BookingService {
 
         bookingHelper.setBookingRequestValues(bookingRequest, booking);
 
-        bookingHelper.setAutoValues(booking, period, rental);
+        bookingHelper.setAutoValues(booking, rental);
 
         Booking createdBooking = bookingRepository.save(booking);
 

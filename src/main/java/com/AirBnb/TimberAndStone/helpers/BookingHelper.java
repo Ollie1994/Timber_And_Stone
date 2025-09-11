@@ -67,8 +67,19 @@ public class BookingHelper {
                 booking.getNote());
     }
 
+        // DTO values
+        public void setBookingRequestValues (BookingRequest bookingRequest, Booking booking) {
+        Period period = new Period();
+        period.setStartDate(bookingRequest.getStartDate());
+        period.setEndDate(bookingRequest.getEndDate());
+        booking.setPeriod(period);
+        booking.setNote(bookingRequest.getNote());
+        booking.setNumberOfGuests(bookingRequest.getNumberOfGuests());
+    }
+
         // Autovalues
-        public void setAutoValues (Booking booking, Period period, Rental rental) {
+        public void setAutoValues (Booking booking, Rental rental) {
+        Period period = booking.getPeriod();
         booking.setTotalPrice(periodService.getAmountOfDays(period) * rental.getPricePerNight());
         booking.setPaid(false);
         booking.setBookingStatus(BookingStatus.PENDING);
@@ -79,13 +90,4 @@ public class BookingHelper {
         booking.setReviewedByHost(false);
     }
 
-         // DTO values
-        public void setBookingRequestValues (BookingRequest bookingRequest, Booking booking) {
-        Period period = new Period();
-        period.setStartDate(bookingRequest.getStartDate());
-        period.setEndDate(bookingRequest.getEndDate());
-        booking.setPeriod(period);
-        booking.setNote(bookingRequest.getNote());
-        booking.setNumberOfGuests(bookingRequest.getNumberOfGuests());
-    }
 }
