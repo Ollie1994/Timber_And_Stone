@@ -311,7 +311,7 @@ public class RentalService {
     public RentalPageResponse getRentalPageById(String id) {
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Rental not found (P)"));
-        return convertToRentalPageResponse(rental);
+        return rentalConverter.convertToRentalPageResponse(rental);
     }
 
     // -------------------------- Rental pages --------------------------------------------------------------------------
@@ -321,6 +321,7 @@ public class RentalService {
                 .map(this::convertToRentalPagesResponse)
                 .collect(Collectors.toList());
     }
+
     public List<RentalPagesResponse> getRentalPagesByPricePerNightRange(Double minPrice, Double maxPrice) {
         if(minPrice <= 0 || maxPrice <= 0) {
             throw new IllegalArgumentException("Price must be greater than 0");
@@ -444,26 +445,6 @@ public class RentalService {
 
     // --------------------- Rental Page Helpers ---------------------------------------------------
 
-
-    private RentalPageResponse convertToRentalPageResponse(Rental rental) {
-        return new RentalPageResponse(
-                rental.getId(),
-                rental.getTitle(),
-                rental.getPhotos(),
-                rental.getPricePerNight(),
-                rental.getRating(),
-                rental.getHost(),
-                rental.getAddress(),
-                rental.getCategory(),
-                rental.getAmenities(),
-                rental.getCapacity(),
-                rental.getAvailablePeriods(),
-                rental.getDescription(),
-                rental.getPolicy(),
-                rental.getCreatedAt(),
-                rental.getUpdatedAt()
-        );
-    }
     // --------------------- Rental Pages Helpers ---------------------------------------------------
 
     private RentalPagesResponse convertToRentalPagesResponse(Rental rental) {
