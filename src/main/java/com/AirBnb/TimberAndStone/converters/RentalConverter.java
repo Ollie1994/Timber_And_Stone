@@ -4,19 +4,11 @@ import com.AirBnb.TimberAndStone.dtos.responses.rental.RentalPageResponse;
 import com.AirBnb.TimberAndStone.models.Rental;
 import org.springframework.stereotype.Component;
 
+
+import com.AirBnb.TimberAndStone.dtos.responses.rental.GetRentalsResponse;
+
 @Component
 public class RentalConverter {
-
-
-
-
-
-
-
-
-
-
-
 
     public RentalPageResponse convertToRentalPageResponse(Rental rental) {
         return new RentalPageResponse(
@@ -36,5 +28,16 @@ public class RentalConverter {
                 rental.getCreatedAt(),
                 rental.getUpdatedAt()
         );
+    }
+
+    public GetRentalsResponse convertToGetRentalsResponse(Rental rental) {
+        return new GetRentalsResponse(
+                rental.getTitle(),
+                rental.getCategory(),
+                rental.getCapacity(),
+                rental.getPricePerNight(),
+                rental.getAddress().getCountry(),
+                rental.getAddress().getCity(),
+                rental.getRating().getAverageRating());
     }
 }

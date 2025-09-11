@@ -3,22 +3,29 @@ package com.AirBnb.TimberAndStone.helpers;
 import com.AirBnb.TimberAndStone.dtos.responses.booking.PatchBookingResponse;
 import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
 import com.AirBnb.TimberAndStone.exceptions.UnauthorizedException;
-import com.AirBnb.TimberAndStone.models.Booking;
-import com.AirBnb.TimberAndStone.models.BookingStatus;
-import com.AirBnb.TimberAndStone.models.User;
+import com.AirBnb.TimberAndStone.generators.BookingNumberGenerator;
+import com.AirBnb.TimberAndStone.models.*;
 import com.AirBnb.TimberAndStone.repositories.BookingRepository;
+import com.AirBnb.TimberAndStone.services.PeriodService;
 import com.AirBnb.TimberAndStone.services.UserService;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 public class BookingHelper {
 
     private UserService userService;
     private BookingRepository bookingRepository;
+    private BookingNumberGenerator bookingNumberGenerator;
+    private PeriodService periodService;
 
-    public BookingHelper(BookingRepository bookingRepository, UserService userService) {
+    public BookingHelper(BookingRepository bookingRepository, UserService userService, BookingNumberGenerator bookingNumberGenerator, PeriodService periodService) {
         this.bookingRepository = bookingRepository;
         this.userService = userService;
+        this.bookingNumberGenerator = bookingNumberGenerator;
+        this.periodService = periodService;
+
     }
 
     public PatchBookingResponse approveBooking(String id) {
@@ -57,5 +64,17 @@ public class BookingHelper {
                 booking.getPaid(),
                 booking.getBookingStatus(),
                 booking.getNote());
+    }
+
+        // Autovalues
+        public void setAutoValues (Booking booking, Period period, Rental rental) {
+        booking.setTotalPrice(periodService.getAmountOfDays(period) * rental.getPricePerNight());
+        booking.setPaid(false);
+        booking.setBookingStatus(BookingStatus.PENDING);
+        booking.setCreatedAt(LocalDateTime.now());
+        booking.setUpdatedAt(LocalDateTime.now());
+        booking.setBookingNumber(bookingNumberGenerator.generateBookingNumber(userService.getAuthenticated().getId(), rental.getId()));
+        booking.setReviewedByUser(false);
+        booking.setReviewedByHost(false);
     }
 }
