@@ -1,6 +1,7 @@
 package com.AirBnb.TimberAndStone.helpers;
 
 import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
+import com.AirBnb.TimberAndStone.models.Amenity;
 import com.AirBnb.TimberAndStone.models.Address;
 import com.AirBnb.TimberAndStone.models.Rating;
 import com.AirBnb.TimberAndStone.models.Rental;
@@ -47,6 +48,38 @@ public class RentalHelper {
         return rentalRepository.findById(rentalID)
                 .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
     }
+
+    public boolean isAmenitiesMatching(List<Amenity> amenitiesRental, List<Amenity> amenitiesDTO) {
+        Boolean match = false;
+        Integer count = 0;
+        if (amenitiesRental.size() < amenitiesDTO.size()) {
+            System.out.println(amenitiesRental.size() + " (>=) " + amenitiesDTO.size());
+            System.out.println("--------------------------------------------------------");
+            return match = false;
+        }
+        for (Amenity amenityDTO : amenitiesDTO) {
+            for (Amenity amenity : amenitiesRental) {
+                if (amenity.getAmenityTitle().equals(amenityDTO.getAmenityTitle())) {
+                    System.out.println(amenity.getAmenityTitle() + " ---> MATCH <--- " + amenityDTO.getAmenityTitle());
+                    match = true;
+                    count++;
+                    System.out.println("-> " + count + " & True <-");
+                    if (count == amenitiesDTO.size()) {
+                        System.out.println("-> Break & " + count + " <-");
+                        break;
+                    }
+                } else if (count != amenitiesDTO.size()) {
+                    System.out.println("-> No Match & False <-");
+                    match = false;
+                }
+            }
+        }
+        System.out.println("--------------------------------------------------------");
+        return match;
+    }
+
+
+
 
     private List<Rental> trimCountryNamesFromRentalList(List<Rental> rentalList) {
         for(Rental rental : rentalList) {

@@ -284,7 +284,7 @@ public class RentalService {
         List<Rental> rentals = rentalRepository.findAll();
         List<Rental> matchingRentals = rentals.stream()
                 .filter(rental -> rental.getAmenities().stream()
-                        .anyMatch(amenities -> isAmenitiesMatching(rental.getAmenities(), rentalAmenitiesRequest.getAmenities()))
+                        .anyMatch(amenities -> rentalHelper.isAmenitiesMatching(rental.getAmenities(), rentalAmenitiesRequest.getAmenities()))
                 )
                 .collect(Collectors.toList());
 
@@ -374,44 +374,5 @@ public class RentalService {
         }
         return matchingRentals;
     }
-
-    private boolean isAmenitiesMatching(List<Amenity> amenitiesRental, List<Amenity> amenitiesDTO) {
-        Boolean match = false;
-        Integer count = 0;
-        if (amenitiesRental.size() < amenitiesDTO.size()) {
-            System.out.println(amenitiesRental.size() + " (>=) " + amenitiesDTO.size());
-            System.out.println("--------------------------------------------------------");
-            return match = false;
-        }
-        for (Amenity amenityDTO : amenitiesDTO) {
-                for (Amenity amenity : amenitiesRental) {
-                    if (amenity.getAmenityTitle().equals(amenityDTO.getAmenityTitle())) {
-                        System.out.println(amenity.getAmenityTitle() + " ---> MATCH <--- " + amenityDTO.getAmenityTitle());
-                        match = true;
-                        count++;
-                        System.out.println("-> " + count + " & True <-");
-                        if (count == amenitiesDTO.size()) {
-                            System.out.println("-> Break & " + count + " <-");
-                            break;
-                        }
-                    } else if (count != amenitiesDTO.size()) {
-                        System.out.println("-> No Match & False <-");
-                        match = false;
-                    }
-                }
-        }
-        System.out.println("--------------------------------------------------------");
-        return match;
-    }
-
-    // --------------------- Rental Page Helpers ---------------------------------------------------
-
-    // --------------------- Rental Pages Helpers ---------------------------------------------------
-
-
-
-
-
-
 }
 
