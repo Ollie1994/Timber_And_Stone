@@ -80,7 +80,7 @@ public class BookingHelper {
     }
 
          // DTO values
-        public void setDtoValues (BookingRequest bookingRequest, Booking booking) {
+        public void setBookingRequestValues (BookingRequest bookingRequest, Booking booking) {
         Period period = new Period();
         period.setStartDate(bookingRequest.getStartDate());
         period.setEndDate(bookingRequest.getEndDate());
