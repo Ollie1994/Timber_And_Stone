@@ -62,15 +62,9 @@ public class BookingService {
 
         booking.setRental(rental);
 
-        //DTO values
-        Period period = new Period();
-        period.setStartDate(bookingRequest.getStartDate());
-        period.setEndDate(bookingRequest.getEndDate());
-        booking.setPeriod(period);
-        booking.setNote(bookingRequest.getNote());
-        booking.setNumberOfGuests(bookingRequest.getNumberOfGuests());
+        bookingHelper.setBookingValues(bookingRequest, booking);
 
-        bookingHelper.setAutoValues(booking, period, rental);
+        bookingHelper.setAutoValues(booking, rental);
 
         Booking createdBooking = bookingRepository.save(booking);
 

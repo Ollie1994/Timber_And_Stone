@@ -80,8 +80,52 @@ public class RentalHelper {
     }
 
 
-    private List<Rental> trimCountryNamesFromRentalList(List<Rental> rentalList) {
-        for (Rental rental : rentalList) {
+    // Command pattern to have two trimming-methods (for country and city)
+    // https://stackoverflow.com/questions/2186931/java-pass-method-as-parameter
+    private interface RentalCommand {
+        void execute(Rental rental);
+    }
+
+    private static class trimCountry implements RentalCommand {
+        @Override
+        public void execute(Rental rental) {
+                Address address = rental.getAddress();
+                rental.setAddress(new Address(
+                        StringUtils.trimAllWhitespace(address.getCountry()),
+                        address.getCity(),
+                        address.getPostalCode(),
+                        address.getStreetName(),
+                        address.getStreetNumber(),
+                        address.getLatitude(),
+                        address.getLongitude()));
+        }
+    }
+
+    private static class trimCity implements RentalCommand {
+        @Override
+        public void execute(Rental rental) {
+                Address address = rental.getAddress();
+                rental.setAddress(new Address(
+                        address.getCountry(),
+                        StringUtils.trimAllWhitespace(address.getCity()),
+                        address.getPostalCode(),
+                        address.getStreetName(),
+                        address.getStreetNumber(),
+                        address.getLatitude(),
+                        address.getLongitude()));
+        }
+    }
+
+    // Calls a rental command for each rental in a rentals list.
+    private static List<Rental> callRentalCommand(RentalCommand command, List<Rental> rentals) {
+        for(Rental rental : rentals) {
+            command.execute(rental);
+        }
+        return rentals;
+    }
+
+  /*  private List<Rental> trimCountryNamesFromRentalList(List<Rental> rentalList) {
+        for(Rental rental : rentalList) {
             Address address = rental.getAddress();
             rental.setAddress(new Address(
                     StringUtils.trimAllWhitespace(address.getCountry()),
@@ -95,6 +139,21 @@ public class RentalHelper {
         return rentalList;
     }
 
+    private List<Rental> trimCityNamesFromRentalList(List<Rental> rentalList) {
+        for(Rental rental : rentalList) {
+            Address address = rental.getAddress();
+            rental.setAddress(new Address(
+                    address.getCountry(),
+                    StringUtils.trimAllWhitespace(address.getCity()),
+                    address.getPostalCode(),
+                    address.getStreetName(),
+                    address.getStreetNumber(),
+                    address.getLatitude(),
+                    address.getLongitude()));
+        }
+        return rentalList;
+    }*/
+
     public List<Rental> getRentalsByCountry(String country) {
         //Trim whitespace from country input
         String trimmedCountry = StringUtils.trimAllWhitespace(country);
@@ -102,7 +161,8 @@ public class RentalHelper {
         //Make a list of rentals with trimmed country names.
         List<Rental> allRentals = rentalRepository.findAll();
 
-        List<Rental> trimmedRentals = trimCountryNamesFromRentalList(allRentals);
+       // List<Rental> trimmedRentals = trimCountryNamesFromRentalList(allRentals);
+        List<Rental> trimmedRentals = callRentalCommand(new trimCountry(), allRentals);
 
         //Filter only matching trimmed rentals to trimmed country
         trimmedRentals = trimmedRentals.stream()
@@ -110,6 +170,36 @@ public class RentalHelper {
                 .toList();
 
         //New list for holding matching untrimmed rentals, to output the untrimmed country.
+        List<Rental> matchingRentals = new ArrayList<>();
+
+        //For each rental.id, compare to trimmedRental.id and add to matchingRentals.
+        List<Rental> rentals = rentalRepository.findAll();
+        for (Rental rental : rentals) {
+            for (Rental trimmedRental : trimmedRentals) {
+                if(rental.getId().equals(trimmedRental.getId())) {
+                    matchingRentals.add(rental);
+                }
+            }
+        }
+        return matchingRentals;
+    }
+
+    public List<Rental> getRentalsByCountryAndCity(String country, String city) {
+        //Trim all city names
+        String trimmedCity = StringUtils.trimAllWhitespace(city);
+
+        //Make a list of matching country rentals with trimmed city names.
+        List<Rental> rentalsByCountry = getRentalsByCountry(country);
+
+        List<Rental> trimmedRentals = callRentalCommand(new trimCountry(), rentalsByCountry);
+        trimmedRentals = callRentalCommand(new trimCity(), trimmedRentals);
+
+        //Filter only matching trimmed rentals to trimmed city
+        trimmedRentals = trimmedRentals.stream()
+                .filter(rental -> rental.getAddress().getCity().equalsIgnoreCase(trimmedCity))
+                .toList();
+
+        //New list for holding matching untrimmed rentals (to output the untrimmed city.)
         List<Rental> matchingRentals = new ArrayList<>();
 
         //For each rental.id, compare to trimmedRental.id and add to matchingRentals.
