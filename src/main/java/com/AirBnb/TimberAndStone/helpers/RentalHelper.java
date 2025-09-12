@@ -1,5 +1,6 @@
 package com.AirBnb.TimberAndStone.helpers;
 
+import com.AirBnb.TimberAndStone.dtos.requests.rental.RentalRequest;
 import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
 import com.AirBnb.TimberAndStone.models.Amenity;
 import com.AirBnb.TimberAndStone.models.Address;
@@ -27,11 +28,11 @@ public class RentalHelper {
         return rating;
     }
 
-    public String getValidatedPolicy (String policy) {
+    public String getValidatedPolicy(String policy) {
         //If policy is not null...
-        if(policy != null) {
+        if (policy != null) {
             //If empty, return default txt.
-            if(policy.trim().isEmpty()) {
+            if (policy.trim().isEmpty()) {
                 return "Default policy txt";
                 //Else, return input policy.
             } else {
@@ -205,11 +206,26 @@ public class RentalHelper {
         List<Rental> rentals = rentalRepository.findAll();
         for (Rental rental : rentals) {
             for (Rental trimmedRental : trimmedRentals) {
-                if(rental.getId().equals(trimmedRental.getId())) {
+                if (rental.getId().equals(trimmedRental.getId())) {
                     matchingRentals.add(rental);
                 }
             }
         }
         return matchingRentals;
+    }
+
+
+    public void setRentalValues(RentalRequest request, Rental rental) {
+        rental.setAddress(request.getAddress());
+        rental.setAvailablePeriods(request.getAvailablePeriods());
+        rental.setAmenities(request.getAmenities());
+        rental.setTitle(request.getTitle());
+        rental.setPhotos(request.getPhotos());
+        rental.setPricePerNight(request.getPricePerNight());
+        rental.setCategory(request.getCategory());
+        rental.setCapacity(request.getCapacity());
+        rental.setDescription(request.getDescription());
+        rental.setPolicy(getValidatedPolicy(request.getPolicy()));
+
     }
 }

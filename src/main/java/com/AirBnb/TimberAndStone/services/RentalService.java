@@ -53,7 +53,6 @@ public class RentalService {
 
     public RentalResponse createRental(RentalRequest rentalRequest) {
 
-
         rentalValidation.validateRentalRequest(rentalRequest);
 
         // Detta under sätter host som den som är inloggad
@@ -61,29 +60,17 @@ public class RentalService {
         if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
             throw new UnauthorizedException("User is not authenticated");
         }
-
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
         Rental rental = new Rental();
 
-        // Fields we set ourself
+        // Fields we set ourselves - maybe add to autovalues
         rental.setRating(rentalHelper.getDefaultRating());
         rental.setHost(user);
 
-
-        // DTON
-        rental.setAddress(rentalRequest.getAddress());
-        rental.setAvailablePeriods(rentalRequest.getAvailablePeriods());
-        rental.setAmenities(rentalRequest.getAmenities());
-        rental.setTitle(rentalRequest.getTitle());
-        rental.setPhotos(rentalRequest.getPhotos());
-        rental.setPricePerNight(rentalRequest.getPricePerNight());
-        rental.setCategory(rentalRequest.getCategory());
-        rental.setCapacity(rentalRequest.getCapacity());
-        rental.setDescription(rentalRequest.getDescription());
-        rental.setPolicy(rentalHelper.getValidatedPolicy(rentalRequest.getPolicy()));
-
+        rentalHelper.setRentalValues(rentalRequest, rental);
 
         rentalRepository.save(rental);
         return new RentalResponse("New Rental has been created", rental.getTitle());
