@@ -62,7 +62,7 @@ public class BookingService {
 
         booking.setRental(rental);
 
-        bookingHelper.setBookingRequestValues(bookingRequest, booking);
+        bookingHelper.setBookingValues(bookingRequest, booking);
 
         bookingHelper.setAutoValues(booking, rental);
 
