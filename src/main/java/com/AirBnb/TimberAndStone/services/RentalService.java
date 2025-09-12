@@ -70,7 +70,7 @@ public class RentalService {
         rental.setRating(rentalHelper.getDefaultRating());
         rental.setHost(user);
 
-        rentalHelper.setDtoValues(rentalRequest, rental);
+        rentalHelper.setRentalValues(rentalRequest, rental);
 
         rentalRepository.save(rental);
         return new RentalResponse("New Rental has been created", rental.getTitle());

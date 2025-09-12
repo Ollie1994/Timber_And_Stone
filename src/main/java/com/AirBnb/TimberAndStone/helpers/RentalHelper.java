@@ -125,7 +125,7 @@ public class RentalHelper {
     }
 
 
-    public void setDtoValues(RentalRequest request, Rental rental) {
+    public void setRentalValues(RentalRequest request, Rental rental) {
         rental.setAddress(request.getAddress());
         rental.setAvailablePeriods(request.getAvailablePeriods());
         rental.setAmenities(request.getAmenities());
