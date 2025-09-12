@@ -1,5 +1,6 @@
 package com.AirBnb.TimberAndStone.helpers;
 
+import com.AirBnb.TimberAndStone.dtos.requests.booking.BookingRequest;
 import com.AirBnb.TimberAndStone.dtos.responses.booking.PatchBookingResponse;
 import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
 import com.AirBnb.TimberAndStone.exceptions.UnauthorizedException;
@@ -66,8 +67,19 @@ public class BookingHelper {
                 booking.getNote());
     }
 
+        // DTO values
+        public void setBookingValues(BookingRequest bookingRequest, Booking booking) {
+        Period period = new Period();
+        period.setStartDate(bookingRequest.getStartDate());
+        period.setEndDate(bookingRequest.getEndDate());
+        booking.setPeriod(period);
+        booking.setNote(bookingRequest.getNote());
+        booking.setNumberOfGuests(bookingRequest.getNumberOfGuests());
+    }
+
         // Autovalues
-        public void setAutoValues (Booking booking, Period period, Rental rental) {
+        public void setAutoValues (Booking booking, Rental rental) {
+        Period period = booking.getPeriod();
         booking.setTotalPrice(periodService.getAmountOfDays(period) * rental.getPricePerNight());
         booking.setPaid(false);
         booking.setBookingStatus(BookingStatus.PENDING);
@@ -77,4 +89,5 @@ public class BookingHelper {
         booking.setReviewedByUser(false);
         booking.setReviewedByHost(false);
     }
+
 }
