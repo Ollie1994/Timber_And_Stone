@@ -1,14 +1,13 @@
 package com.AirBnb.TimberAndStone.handlers.bookingValidationHandlers;
 
 import com.AirBnb.TimberAndStone.dtos.requests.booking.BookingRequest;
-import com.AirBnb.TimberAndStone.validation.RentalValidation;
 
 
 // Checks if the booking requests num of guests is less than 1
 // or greater than the rentals' capacity.
 public class ValidateNumOfGuests implements BookingValidatorHandler{
     private BookingValidatorHandler nextHandler;
-    private RentalValidation rentalValidation;
+
 
 
     @Override
