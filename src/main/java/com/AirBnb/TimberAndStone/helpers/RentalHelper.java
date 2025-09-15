@@ -1,9 +1,8 @@
 package com.AirBnb.TimberAndStone.helpers;
 
 import com.AirBnb.TimberAndStone.dtos.requests.rental.RentalRequest;
-import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
-import com.AirBnb.TimberAndStone.models.Amenity;
 import com.AirBnb.TimberAndStone.models.Address;
+import com.AirBnb.TimberAndStone.models.Amenity;
 import com.AirBnb.TimberAndStone.models.Rating;
 import com.AirBnb.TimberAndStone.models.Rental;
 import com.AirBnb.TimberAndStone.repositories.RentalRepository;
@@ -46,8 +45,7 @@ public class RentalHelper {
     }
 
     public Rental getRental(String rentalID) {
-        return rentalRepository.findById(rentalID)
-                .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
+        return rentalRepository.findById(rentalID).orElse(null);
     }
 
     public boolean isAmenitiesMatching(List<Amenity> amenitiesRental, List<Amenity> amenitiesDTO) {
