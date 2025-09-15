@@ -3,6 +3,8 @@ package com.AirBnb.TimberAndStone.validation;
 import com.AirBnb.TimberAndStone.dtos.requests.booking.BookingRequest;
 import com.AirBnb.TimberAndStone.dtos.requests.booking.PatchBookingRequest;
 import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
+import com.AirBnb.TimberAndStone.handlers.bookingValidationHandlers.*;
+import com.AirBnb.TimberAndStone.helpers.RentalHelper;
 import com.AirBnb.TimberAndStone.models.Booking;
 import com.AirBnb.TimberAndStone.models.Rental;
 import com.AirBnb.TimberAndStone.repositories.BookingRepository;
@@ -15,14 +17,29 @@ public class BookingValidation {
     private final RentalRepository rentalRepository;
     private final PeriodService periodService;
     private final BookingRepository bookingRepository;
+    private final RentalHelper rentalHelper;
 
-    public BookingValidation(RentalRepository rentalRepository, PeriodService periodService, BookingRepository bookingRepository) {
+    public BookingValidation(RentalRepository rentalRepository, PeriodService periodService, BookingRepository bookingRepository, RentalHelper rentalHelper) {
         this.rentalRepository = rentalRepository;
         this.periodService = periodService;
         this.bookingRepository = bookingRepository;
+        this.rentalHelper = rentalHelper;
     }
 
     public void validateBookingRequest(BookingRequest request) {
+        BookingValidatorHandler validateRental = new ValidateRental(rentalRepository, rentalHelper);
+        BookingValidatorHandler validateRentalPeriod = new ValidateRentalPeriod(periodService, rentalHelper);
+        BookingValidatorHandler validatePeriodOrder = new ValidatePeriodOrder();
+        BookingValidatorHandler validateNumOfGuests = new ValidateNumOfGuests(rentalHelper);
+
+        validateRental.setNextHandler(validateRentalPeriod);
+        validateRentalPeriod.setNextHandler(validatePeriodOrder);
+        validatePeriodOrder.setNextHandler(validateNumOfGuests);
+
+        validateRental.handleRequest(request);
+
+    }
+    /*public void validateBookingRequest(BookingRequest request) {
         Rental rental = rentalRepository.findById(request.getRental().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
 
@@ -33,7 +50,7 @@ public class BookingValidation {
         }
 
         validateNumberOfGuests(request.getNumberOfGuests(), rental);
-    }
+    }*/
 
 
     public Booking validatePatchRequest(PatchBookingRequest request, String id) {
