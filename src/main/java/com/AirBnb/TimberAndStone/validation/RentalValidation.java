@@ -1,16 +1,32 @@
 package com.AirBnb.TimberAndStone.validation;
 
 import com.AirBnb.TimberAndStone.dtos.requests.rental.RentalRequest;
-import com.AirBnb.TimberAndStone.models.Category;
-import com.AirBnb.TimberAndStone.models.Period;
+import com.AirBnb.TimberAndStone.handlers.rentalValidationHandlers.*;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class RentalValidation {
 
     public void validateRentalRequest(RentalRequest request) {
+        RentalValidatorHandler validateTitle = new ValidateTitle();
+        RentalValidatorHandler validatePhotos = new ValidatePhotos();
+        RentalValidatorHandler validatePrice = new ValidatePricePerNight();
+        RentalValidatorHandler validateCategory = new ValidateCategory();
+        RentalValidatorHandler validateCapacity = new ValidateCapacity();
+        RentalValidatorHandler validateDescription = new ValidateDescription();
+        RentalValidatorHandler validatePeriods = new ValidatePeriods();
+
+        validateTitle.setNextHandler(validatePhotos);
+        validatePhotos.setNextHandler(validatePrice);
+        validatePrice.setNextHandler(validateCategory);
+        validateCategory.setNextHandler(validateCapacity);
+        validateCapacity.setNextHandler(validateDescription);
+        validateDescription.setNextHandler(validatePeriods);
+
+        validateTitle.handleRequest(request);
+    }
+
+    /*public void validateRentalRequest(RentalRequest request) {
         // Validate title can not be empty or null
         String title = request.getTitle();
         if (title == null || title.trim().isEmpty()) {
@@ -55,7 +71,7 @@ public class RentalValidation {
                 throw new IllegalArgumentException("Rental availability period start date must be before end date!");
             }
         });
-    }
+    }*/
 }
 
 
