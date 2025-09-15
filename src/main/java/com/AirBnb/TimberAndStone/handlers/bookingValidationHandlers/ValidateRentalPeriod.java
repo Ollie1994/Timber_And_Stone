@@ -14,7 +14,6 @@ public class ValidateRentalPeriod implements BookingValidatorHandler {
     public void handleRequest(BookingRequest request) {
         // periodService.isPeriodMatching checks available periods in a rental
         periodService.isPeriodMatching(request.getRental().getAvailablePeriods(), request);
-        // periodService.isPeriodMatching(rental.getAvailablePeriods(), request);
 
         if (nextHandler != null) {
             nextHandler.handleRequest(request);
