@@ -3,6 +3,7 @@ package com.AirBnb.TimberAndStone.validation;
 import com.AirBnb.TimberAndStone.dtos.requests.booking.BookingRequest;
 import com.AirBnb.TimberAndStone.dtos.requests.booking.PatchBookingRequest;
 import com.AirBnb.TimberAndStone.exceptions.ResourceNotFoundException;
+import com.AirBnb.TimberAndStone.handlers.bookingValidationHandlers.*;
 import com.AirBnb.TimberAndStone.models.Booking;
 import com.AirBnb.TimberAndStone.models.Rental;
 import com.AirBnb.TimberAndStone.repositories.BookingRepository;
@@ -23,6 +24,19 @@ public class BookingValidation {
     }
 
     public void validateBookingRequest(BookingRequest request) {
+        BookingValidatorHandler validateRental = new ValidateRental(rentalRepository);
+        BookingValidatorHandler validateRentalPeriod = new ValidateRentalPeriod(periodService);
+        BookingValidatorHandler validatePeriodOrder = new ValidatePeriodOrder();
+        BookingValidatorHandler validateNumOfGuests = new ValidateNumOfGuests();
+
+        validateRental.setNextHandler(validateRentalPeriod);
+        validateRentalPeriod.setNextHandler(validatePeriodOrder);
+        validatePeriodOrder.setNextHandler(validateNumOfGuests);
+
+        validateRental.handleRequest(request);
+
+    }
+    /*public void validateBookingRequest(BookingRequest request) {
         Rental rental = rentalRepository.findById(request.getRental().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
 
@@ -33,7 +47,7 @@ public class BookingValidation {
         }
 
         validateNumberOfGuests(request.getNumberOfGuests(), rental);
-    }
+    }*/
 
 
     public Booking validatePatchRequest(PatchBookingRequest request, String id) {
