@@ -39,6 +39,9 @@ public class BookingValidation {
         validateRental.handleRequest(request);
 
     }
+
+    // This is the method for validating before the pattern above was implemented.
+    // The structure differs yet the functionality remains.
     /*public void validateBookingRequest(BookingRequest request) {
         Rental rental = rentalRepository.findById(request.getRental().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
